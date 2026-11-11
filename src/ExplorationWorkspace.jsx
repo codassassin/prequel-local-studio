@@ -1,5 +1,5 @@
 import React,{useCallback,useEffect,useMemo,useRef,useState}from'react';
-import{ArrowLeft,Copy,Download,ExternalLink,FileImage,Link2,MousePointer2,Plus,Save,Sparkles,Trash2,ZoomIn,ZoomOut}from'lucide-react';
+import{ArrowLeft,Copy,Download,ExternalLink,FileImage,Link2,MousePointer2,Plus,Save,Sparkles,MessageCircle,Trash2,ZoomIn,ZoomOut}from'lucide-react';
 
 const DB_NAME='stillroom-projects';
 const STORE='projects';
@@ -12,7 +12,7 @@ async function writeProject(project){const db=await openDb();return new Promise(
 export default function ExplorationWorkspace(){
  const [nodes,setNodes]=useState([]),[edges,setEdges]=useState([]),[offset,setOffset]=useState({x:80,y:70}),[scale,setScale]=useState(1),[selected,setSelected]=useState([]),[connectMode,setConnectMode]=useState(false),[projectName,setProjectName]=useState('Untitled exploration'),[status,setStatus]=useState('Loading local project…'),[ready,setReady]=useState(false);
  const [urls,setUrls]=useState({});
- const [discoverOpen,setDiscoverOpen]=useState(false);
+ const [discoverOpen,setDiscoverOpen]=useState(false),[collabOpen,setCollabOpen]=useState(false),[collabBusy,setCollabBusy]=useState(false),[collabResult,setCollabResult]=useState(null),[collabError,setCollabError]=useState('');
  const urlRegistry=useRef(new Map());
  const stage=useRef(null),world=useRef(null),drag=useRef(null),pan=useRef(null),fileInput=useRef(null),saveTimer=useRef(null),raf=useRef(0),pointer=useRef(null);
  useEffect(()=>{let alive=true;readProject().then(project=>{if(!alive)return;if(project){setNodes(project.nodes||[]);setEdges(project.edges||[]);setProjectName(project.name||'Untitled exploration');}setStatus(project?'Project restored from this device':'New local project');setReady(true);}).catch(error=>{console.error('[Stillroom workspace] IndexedDB read failed',error);setStatus('Local project storage unavailable');setReady(true);});return()=>{alive=false;};},[]);
@@ -35,6 +35,41 @@ export default function ExplorationWorkspace(){
   {id:'unexpected',title:'Against the mood',description:'Invert the expected feeling of the photograph using contrasting colour and light.',hint:'In Refine: choose a look outside your usual category and refine manually.'}
  ];
  const selectedNode=nodes.find(node=>node.id===selected[selected.length-1]);
+ const analyzeSelectedPhoto=async()=>{
+  if(!selectedNode?.blob)return;
+  setCollabBusy(true);setCollabError('');setCollabResult(null);
+  let bitmap=null;
+  try{
+   if(typeof createImageBitmap==='function')bitmap=await createImageBitmap(selectedNode.blob,{resizeWidth:256,resizeHeight:256,resizeQuality:'low'});
+   else {const url=URL.createObjectURL(selectedNode.blob);try{bitmap=await new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=()=>reject(new Error('Could not read this photograph locally.'));image.src=url;});}finally{URL.revokeObjectURL(url);}}
+   const width=bitmap.width||bitmap.naturalWidth,height=bitmap.height||bitmap.naturalHeight,canvas=document.createElement('canvas');canvas.width=128;canvas.height=Math.max(1,Math.round(128*height/width));const ctx=canvas.getContext('2d',{willReadFrequently:true});if(!ctx)throw new Error('Local image analysis is unavailable in this browser.');ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);const data=ctx.getImageData(0,0,canvas.width,canvas.height).data;
+   let lum=0,lum2=0,sat=0,count=0;
+   for(let i=0;i<data.length;i+=16){const r=data[i]/255,g=data[i+1]/255,b=data[i+2]/255,max=Math.max(r,g,b),min=Math.min(r,g,b),l=.2126*r+.7152*g+.0722*b;lum+=l;lum2+=l*l;sat+=max===0?0:(max-min)/max;count++;}
+   const mean=lum/count,contrast=Math.sqrt(Math.max(0,lum2/count-mean*mean)),saturation=sat/count;
+   const observations=[];
+   if(mean>.62)observations.push('The overall frame is bright; protect highlights while shaping the mood.');
+   else if(mean<.34)observations.push('The frame is relatively dark; lift selective midtones before pushing contrast.');
+   else observations.push('The frame has a mid-range brightness that leaves room to explore both light and shadow.');
+   if(contrast<.16)observations.push('Tonal contrast is gentle; a more defined tonal structure may help.');
+   else if(contrast>.29)observations.push('There is already strong tonal separation; avoid crushing the shadows.');
+   if(saturation<.25)observations.push('The palette is restrained; selective colour could become a focal point.');
+   else if(saturation>.55)observations.push('Colour is already expressive; try a controlled palette rather than adding more saturation.');
+   const suggestions=[];
+   if(mean>.58)suggestions.push({id:'after-light',title:'After the light',reason:'Explore a cinematic grade while retaining detail in the brightest areas.',hint:'Start with a restrained cinematic look; lower highlights slightly and deepen shadows carefully.'});
+   if(saturation>.48)suggestions.push({id:'quiet-palette',title:'A quieter palette',reason:'See what happens when strong colours become more intentional.',hint:'Reduce global saturation slightly, then bring back colour selectively with HSL controls.'});
+   if(contrast<.2)suggestions.push({id:'shape-silence',title:'Shape and silence',reason:'Use tonal separation to make the main shapes read more clearly.',hint:'Try a monochrome or muted look and add a small amount of contrast.'});
+   if(mean<.42)suggestions.push({id:'dreamlike',title:'Somewhere unreal',reason:'Explore a softer atmosphere without losing the scene’s darker detail.',hint:'Lift shadows gently, soften contrast, and test a cooler or warmer white balance.'});
+   if(!suggestions.length)suggestions.push({id:'unexpected',title:'Against the mood',reason:'The photograph has a balanced starting point; try a deliberately contrasting treatment.',hint:'Choose a look opposite to the scene’s current mood, then refine its colour balance.'});
+   setCollabResult({observations,suggestions:suggestions.slice(0,3),metrics:{brightness:Math.round(mean*100),contrast:Math.round(contrast*100),saturation:Math.round(saturation*100)}});
+  }catch(error){console.error('[Stillroom local collaborator]',error);setCollabError(error.message||'Could not analyze this image.');}
+  finally{bitmap?.close?.();setCollabBusy(false);}
+ };
+ const createCollaboratorBranch=suggestion=>{
+  if(!selectedNode)return;
+  const child={...selectedNode,id:uid(),role:'experiment',title:selectedNode.title+' — '+suggestion.title,x:selectedNode.x+300,y:selectedNode.y+70,createdAt:Date.now(),creativeDirection:{id:suggestion.id,title:suggestion.title,hint:suggestion.hint,source:'local-visual-analysis'}};
+  setNodes(current=>[...current,child]);setEdges(current=>[...current,{id:uid(),from:selectedNode.id,to:child.id}]);setSelected([child.id]);setCollabOpen(false);setStatus('Collaborator idea added as an experiment branch. Refine it to create the visual result.');
+ };
+
  const startDirection=direction=>{
   if(!selectedNode)return;
   const source=selectedNode;
@@ -85,7 +120,7 @@ export default function ExplorationWorkspace(){
  const edgeLines=useMemo(()=>edges.map(edge=>{const a=nodeById(edge.from),b=nodeById(edge.to);if(!a||!b)return null;return{...edge,x1:a.x+a.width/2,y1:a.y+a.height/2,x2:b.x+b.width/2,y2:b.y+b.height/2};}).filter(Boolean),[edges,nodes]);
  return <div className="explore-app">
   <header className="explore-topbar"><a href="/" className="explore-back"><ArrowLeft size={16}/> Studio</a><div className="explore-brand"><span className="explore-mark">s</span><span>stillroom</span><i>EXPLORE</i></div><input aria-label="Project name" value={projectName} onChange={e=>setProjectName(e.target.value)} /><div className="explore-save"><span>{status}</span><button onClick={save}><Save size={15}/> Save</button></div></header>
-  <div className="explore-toolbar"><div className="explore-tools"><button onClick={()=>fileInput.current?.click()}><Plus size={15}/> Add photographs</button><button disabled={!selected.length} onClick={duplicate}><Copy size={14}/> Duplicate experiment</button><button disabled={!selected.length} onClick={openSelectedInEditor}><ExternalLink size={14}/> Refine selected</button><button disabled={!selected.length} onClick={()=>setDiscoverOpen(value=>!value)}><Sparkles size={14}/> Discover directions</button><button className={connectMode?'active':''} disabled={nodes.length<2} onClick={()=>{setConnectMode(value=>!value);setSelected([]);}}><Link2 size={14}/> {connectMode?'Choose first node…':'Connect ideas'}</button><button disabled={!selected.length} onClick={removeSelected}><Trash2 size={14}/> Delete</button></div><div className="explore-zoom"><button aria-label="Zoom out" onClick={()=>zoomAt(-.1)}><ZoomOut size={15}/></button><span>{Math.round(scale*100)}%</span><button aria-label="Zoom in" onClick={()=>zoomAt(.1)}><ZoomIn size={15}/></button></div></div>
+  <div className="explore-toolbar"><div className="explore-tools"><button onClick={()=>fileInput.current?.click()}><Plus size={15}/> Add photographs</button><button disabled={!selected.length} onClick={duplicate}><Copy size={14}/> Duplicate experiment</button><button disabled={!selected.length} onClick={openSelectedInEditor}><ExternalLink size={14}/> Refine selected</button><button disabled={!selected.length} onClick={()=>setDiscoverOpen(value=>!value)}><Sparkles size={14}/> Discover directions</button><button disabled={!selectedNode?.blob} onClick={()=>{setCollabOpen(true);if(!collabResult)analyzeSelectedPhoto();}}><MessageCircle size={14}/> Ask collaborator</button><button className={connectMode?'active':''} disabled={nodes.length<2} onClick={()=>{setConnectMode(value=>!value);setSelected([]);}}><Link2 size={14}/> {connectMode?'Choose first node…':'Connect ideas'}</button><button disabled={!selected.length} onClick={removeSelected}><Trash2 size={14}/> Delete</button></div><div className="explore-zoom"><button aria-label="Zoom out" onClick={()=>zoomAt(-.1)}><ZoomOut size={15}/></button><span>{Math.round(scale*100)}%</span><button aria-label="Zoom in" onClick={()=>zoomAt(.1)}><ZoomIn size={15}/></button></div></div>
   <main ref={stage} className={'explore-canvas '+(connectMode?'connecting':'')} onPointerDown={onStageDown} onPointerMove={onStageMove} onPointerUp={onStageUp} onPointerCancel={onStageUp} onLostPointerCapture={onStageUp} onWheel={e=>{if(e.ctrlKey||e.metaKey){e.preventDefault();zoomAt(e.deltaY<0?.05:-.05);}}}>
    <div ref={world} className="explore-world" style={worldStyle}>
     <svg className="explore-edges">{edgeLines.map(edge=><g key={edge.id}><line x1={edge.x1} y1={edge.y1} x2={edge.x2} y2={edge.y2}/><circle cx={(edge.x1+edge.x2)/2} cy={(edge.y1+edge.y2)/2} r="3"/></g>)}</svg>
@@ -97,6 +132,7 @@ export default function ExplorationWorkspace(){
    {!nodes.length&&<div className="explore-empty"><div><div className="explore-empty-icon"><FileImage size={25}/></div><h1>Begin with a photograph.</h1><p>Place an image on the canvas. Duplicate it, move ideas around, and let your experiments take shape.</p><button onClick={()=>fileInput.current?.click()}><Plus size={15}/> Add your first photograph</button><small>Your images and project are stored locally in this browser.</small></div></div>}
    {connectMode&&<div className="explore-hint"><Link2 size={14}/> Select two photographs to connect them</div>}
   </main>
+  {collabOpen&&selectedNode&&<aside className="explore-collab" aria-label="Stillroom creative collaborator"><div className="explore-discover-heading"><div><small>STILLROOM · LOCAL COLLABORATOR</small><h2>Let's explore this frame.</h2></div><button onClick={()=>setCollabOpen(false)} aria-label="Close collaborator">×</button></div><p>I'm looking at <strong>{selectedNode.title}</strong> using a small on-device pixel sample. Your photograph is not uploaded. These are creative observations, not semantic scene recognition.</p>{collabBusy&&<div className="explore-collab-status">Reading a reduced preview locally…</div>}{collabError&&<div className="explore-collab-error">{collabError}<button onClick={analyzeSelectedPhoto}>Try again</button></div>}{collabResult&&<><div className="explore-collab-metrics"><span>Brightness <b>{collabResult.metrics.brightness}%</b></span><span>Contrast <b>{collabResult.metrics.contrast}%</b></span><span>Saturation <b>{collabResult.metrics.saturation}%</b></span></div><h3>What I notice</h3><ul>{collabResult.observations.map((item,i)=><li key={i}>{item}</li>)}</ul><h3>Directions worth trying</h3><div className="explore-discover-list">{collabResult.suggestions.map(suggestion=><button key={suggestion.id} onClick={()=>createCollaboratorBranch(suggestion)}><strong>{suggestion.title}</strong><span>{suggestion.reason}</span><small>Create experiment branch ↗</small></button>)}</div><button className="explore-collab-refresh" onClick={analyzeSelectedPhoto}>Analyze again</button></>}</aside>}
   {discoverOpen&&selectedNode&&<aside className="explore-discover" aria-label="Creative directions"><div className="explore-discover-heading"><div><small>CREATIVE DISCOVERIES</small><h2>Where could this go?</h2></div><button onClick={()=>setDiscoverOpen(false)} aria-label="Close creative directions">×</button></div><p>Choose an idea to branch from <strong>{selectedNode.title}</strong>. These are curated prompts, not AI-generated edits; your photograph stays unchanged until you refine it.</p><div className="explore-discover-list">{discoveryDirections.map(direction=><button key={direction.id} onClick={()=>startDirection(direction)}><strong>{direction.title}</strong><span>{direction.description}</span><small>Create unedited branch ↗</small></button>)}</div></aside>}
   {selectedNode?.creativeDirection&&!discoverOpen&&<aside className="explore-direction-note"><strong>{selectedNode.creativeDirection.title}</strong><span>{selectedNode.creativeDirection.hint}</span><button onClick={openSelectedInEditor}>Open in Refine ↗</button></aside>}
   <footer className="explore-footer"><span><MousePointer2 size={13}/> Drag to move · Drag empty space to pan · Ctrl/⌘ + scroll to zoom</span><span>{nodes.length} {nodes.length===1?'image':'images'} · {edges.length} connections</span></footer>
