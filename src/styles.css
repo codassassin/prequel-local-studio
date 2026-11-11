@@ -278,3 +278,22 @@ body{overflow:hidden}
 .explore-world{will-change:transform;contain:layout style}
 .explore-node{will-change:transform;backface-visibility:hidden}
 .explore-node-image img{transform:translateZ(0);backface-visibility:hidden}
+
+/* Creative discovery panel */
+.explore-discover{position:absolute;z-index:5;top:18px;right:18px;width:min(370px,calc(100% - 36px));max-height:calc(100% - 36px);overflow:auto;background:#201f1a;border:1px solid #716343;box-shadow:0 18px 55px #000b;padding:18px;color:#e9e1d2}
+.explore-discover-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.explore-discover-heading small{font:8px ui-monospace,monospace;letter-spacing:1.5px;color:#c5ae7a}
+.explore-discover-heading h2{font:22px Georgia,serif;font-weight:400;margin:7px 0 0}
+.explore-discover-heading>button{background:transparent;border:1px solid #514a39;color:#cfc5af;font-size:20px;width:30px;height:30px}
+.explore-discover>p{font-size:11px;line-height:1.6;color:#a7a091;margin:13px 0}
+.explore-discover>p strong{color:#e4d7ba;font-weight:500}
+.explore-discover-list{display:flex;flex-direction:column;gap:8px}
+.explore-discover-list>button{display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;background:#29271f;border:1px solid #494333;color:#e5ddcc;padding:12px}
+.explore-discover-list>button:hover{border-color:#c3ad7c;background:#302c21}
+.explore-discover-list strong{font:16px Georgia,serif;font-weight:400}
+.explore-discover-list span{font-size:10px;line-height:1.5;color:#a9a292}
+.explore-discover-list small{font:8px ui-monospace,monospace;letter-spacing:.5px;color:#c9b582}
+.explore-direction-note{position:absolute;z-index:4;right:18px;bottom:18px;width:min(320px,calc(100% - 36px));display:flex;flex-direction:column;gap:7px;padding:13px;background:#201f1af2;border:1px solid #716343;box-shadow:0 12px 35px #0008}
+.explore-direction-note strong{font:15px Georgia,serif;color:#e5d7b8}
+.explore-direction-note span{font-size:10px;line-height:1.5;color:#a9a292}
+.explore-direction-note button{align-self:flex-start;background:transparent;border:0;padding:5px 0;color:#d3bd8b;font-size:10px}
