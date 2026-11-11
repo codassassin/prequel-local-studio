@@ -31,4 +31,4 @@ npm run preview
 Photos are opened as local browser object URLs and processed with Canvas in your browser. The app does not upload images or make API calls.
 
 ## Notes
-This is the first version, built with Canvas 2D. Crop, rotation, layers, masks and undo history are not yet implemented. Presets are original looks, not exact film-stock emulations.
+This is the first version, built with Canvas 2D. Crop ratios use centered crops; freeform crop handles, layers, masks and AI object removal are not included. Presets are original looks, not exact film-stock emulations.
