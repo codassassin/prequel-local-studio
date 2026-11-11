@@ -229,3 +229,46 @@ body{overflow:hidden}
 .ai-backdrop-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.ai-backdrop-grid button{min-height:34px;font-size:10px;letter-spacing:.01em}.ai-creative-controls{margin-top:14px;padding:12px;border:1px solid #484337;background:linear-gradient(145deg,rgba(215,190,139,.07),rgba(25,25,22,.3))}.ai-creative-controls .ai-mask-control{margin:8px 0 14px}.ai-frame-toggle{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:11px;color:#c7c0b0}.ai-frame-toggle input{accent-color:#d0bd8f}.ai-creative-controls .ai-colour{margin-top:10px}
 
 .ai-mask-preview canvas{cursor:crosshair;touch-action:none;display:block;width:100%;height:auto;max-height:230px;object-fit:contain}.ai-brush-tools{margin:12px 0 16px;padding:12px;border:1px solid #484337;background:#1b1b17}.ai-brush-tools>span{display:block;font:9px ui-monospace,monospace;letter-spacing:1.2px;color:#c8b487;margin-bottom:10px}.ai-brush-tools .ai-choice-grid{margin-bottom:12px}.ai-brush-tools label{display:flex;justify-content:space-between;font-size:11px;color:#c9c1b0}.ai-brush-tools output{font-variant-numeric:tabular-nums}
+
+/* Stillroom freeform exploration workspace */
+.explore-app{height:100dvh;min-height:500px;display:flex;flex-direction:column;background:#11110f;color:#e9e6df;overflow:hidden}
+.explore-topbar{height:64px;flex-shrink:0;display:flex;align-items:center;gap:22px;padding:0 24px;border-bottom:1px solid #34332d;background:#151512}
+.explore-back{display:flex;align-items:center;gap:7px;color:#bdb5a4;text-decoration:none;font-size:11px}
+.explore-brand{display:flex;align-items:center;gap:9px;font-size:18px;font-weight:600;letter-spacing:-.7px}
+.explore-brand i{font:8px ui-monospace,monospace;letter-spacing:1.5px;color:#b9a77d;font-style:normal}
+.explore-mark{width:27px;height:27px;border:1px solid #8d7c56;border-radius:50%;display:grid;place-items:center;color:#d0bd8f;font:20px Georgia,serif}
+.explore-topbar>input{min-width:100px;max-width:280px;flex:1;background:transparent;border:0;border-bottom:1px solid #3b3931;padding:8px;color:#e6dfd1;font:15px Georgia,serif;outline:none}
+.explore-save{display:flex;align-items:center;gap:13px;color:#888477;font:9px ui-monospace,monospace}
+.explore-save button,.explore-tools button,.explore-empty button{display:flex;align-items:center;justify-content:center;gap:7px;border:1px solid #756747;background:#d0bd8f;color:#1b1a16;padding:9px 12px;font-size:10px;font-weight:600}
+.explore-toolbar{height:54px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 22px;border-bottom:1px solid #34332d;background:#191916}
+.explore-tools,.explore-zoom{display:flex;align-items:center;gap:7px}
+.explore-tools button{background:#24231e;border-color:#454236;color:#c9c2b2;font-weight:500}
+.explore-tools button.active{border-color:#c7b17f;color:#ead8ad;background:#302b20}
+.explore-tools button:disabled{opacity:.35;cursor:not-allowed}
+.explore-zoom{gap:9px;color:#b8b3a6;font:10px ui-monospace,monospace}
+.explore-zoom button{display:grid;place-items:center;background:transparent;border:0;color:#c4bda9;padding:5px}
+.explore-canvas{position:relative;flex:1;min-height:0;overflow:hidden;touch-action:none;background-color:#151512;background-image:radial-gradient(#5d594b55 .8px,transparent .8px);background-size:22px 22px;cursor:grab}
+.explore-canvas:active{cursor:grabbing}.explore-canvas.connecting{cursor:crosshair}
+.explore-world{position:absolute;inset:0 auto auto 0;width:1px;height:1px}
+.explore-edges{position:absolute;left:0;top:0;width:5000px;height:5000px;overflow:visible;pointer-events:none}
+.explore-edges line{stroke:#a99567;stroke-width:1.6;stroke-dasharray:6 6;opacity:.8}.explore-edges circle{fill:#d0bd8f}
+.explore-node{position:absolute;z-index:1;background:#201f1a;border:1px solid #4a473a;box-shadow:0 12px 35px #0008;cursor:grab;user-select:none}
+.explore-node.selected{border-color:#d0bd8f;box-shadow:0 0 0 2px #d0bd8f44,0 15px 40px #0009}
+.explore-node-image{height:170px;position:relative;background:#292822;overflow:hidden}
+.explore-node-image img{width:100%;height:100%;display:block;object-fit:cover;pointer-events:none}
+.explore-node-image>span{position:absolute;top:9px;left:9px;background:#111d;color:#e0d1ad;padding:5px 7px;font:8px ui-monospace,monospace;letter-spacing:1px}
+.explore-node-empty{height:100%;display:grid;place-items:center;color:#887b5e}
+.explore-node-meta{padding:11px 12px;display:flex;flex-direction:column;gap:4px}
+.explore-node-meta strong{font:14px Georgia,serif;color:#e7dfce;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.explore-node-meta small{font:8px ui-monospace,monospace;color:#8d897e;letter-spacing:.6px}
+.explore-empty{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
+.explore-empty>div{max-width:390px;text-align:center;padding:25px;pointer-events:auto}
+.explore-empty-icon{width:58px;height:58px;border:1px solid #756747;color:#cdb987;display:grid;place-items:center;border-radius:50%;margin:0 auto 18px}
+.explore-empty h1{font:500 30px Georgia,serif;margin:0 0 10px;color:#e9e1d2}
+.explore-empty p{font-size:12px;color:#969184;line-height:1.65;margin:0 auto 19px}
+.explore-empty button{margin:0 auto}
+.explore-empty small{display:block;margin-top:14px;font:8px ui-monospace,monospace;color:#777469}
+.explore-hint{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;padding:9px 13px;border:1px solid #716343;background:#201f1af2;color:#ddc99d;font-size:10px}
+.explore-footer{height:32px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-top:1px solid #34332d;color:#858174;font:8px ui-monospace,monospace;letter-spacing:.4px}
+.explore-footer span{display:flex;align-items:center;gap:7px}
+@media(max-width:700px){.explore-topbar{gap:10px;padding:0 11px}.explore-brand{font-size:15px}.explore-brand i{display:none}.explore-topbar>input{max-width:none}.explore-save>span{display:none}.explore-toolbar{height:auto;min-height:54px;padding:8px;gap:6px}.explore-tools{flex-wrap:wrap}.explore-tools button{padding:7px;font-size:9px}.explore-node-image{height:125px}.explore-node{width:210px!important}.explore-footer{font-size:7px}.explore-footer span:first-child{max-width:70%;line-height:1.4}}
