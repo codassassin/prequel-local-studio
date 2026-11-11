@@ -116,3 +116,19 @@ body{overflow:hidden}
 .thumb-placeholder{position:absolute;z-index:3;left:8px;right:8px;top:50%;transform:translateY(-50%);text-align:center;color:#fff9;font:7px ui-monospace,monospace;letter-spacing:1px;text-shadow:0 1px 8px #000}
 .preset-card:disabled{opacity:1}
 .preset-card:disabled .look-thumb{filter:saturate(.8) brightness(.78)}
+
+
+/* Stillroom 0.3 — creative editing tools */
+.top-actions .icon-btn:disabled{opacity:.28;cursor:not-allowed}
+.creative-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:11px 13px;margin-top:12px;border:1px solid #37362f;background:linear-gradient(110deg,#201f1a,#191916)}
+.tool-group{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.tool-group>span{display:flex;align-items:center;gap:5px;font:8px ui-monospace,monospace;letter-spacing:1.1px;color:#9b927c;margin-right:4px}
+.tool-group button{display:flex;align-items:center;gap:6px;border:1px solid #454236;background:#24231e;color:#c9c2b2;padding:7px 9px;font-size:10px;transition:background .18s,border-color .18s}
+.tool-group button:hover:not(:disabled){background:#343126;border-color:#8a7955;color:#eadbb9}
+.tool-group button:disabled,.crop-tools select:disabled{opacity:.35;cursor:not-allowed}
+.crop-tools select{background:#24231e;color:#d7c9a8;border:1px solid #5a513d;padding:7px 10px;font-size:10px;min-width:110px}
+.save-look{display:flex;align-items:center;gap:6px;border:1px solid #81724f;background:#28251c;color:#ddc99d;padding:7px 9px;font-size:9px;white-space:nowrap}
+.save-look:hover:not(:disabled){background:#3a3323}
+.save-look:disabled{opacity:.35;cursor:not-allowed}
+.library-heading{align-items:center}
+@media(max-width:700px){.creative-toolbar{align-items:flex-start}.tool-group{width:100%}.tool-group button{font-size:9px;padding:7px}.crop-tools{justify-content:space-between}.workspace-foot{padding-bottom:4px}}
