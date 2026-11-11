@@ -4,7 +4,7 @@ const MODEL = 'briaai/RMBG-1.4';
 let segmenterPromise;
 export function modelInfo(){return {id:MODEL,cache:'browser-cache'};}
 export async function loadSubjectModel(onProgress=()=>{}){
-  env.allowRemoteModels=true; env.useBrowserCache=true; env.cacheKey='stillroom-ai-models-v1';
+  env.allowRemoteModels=true; env.allowLocalModels=true; env.localModelPath='/models/'; env.useBrowserCache=true; env.cacheKey='stillroom-ai-models-v1';
   if(!segmenterPromise) segmenterPromise=pipeline('image-segmentation',MODEL,{progress_callback:onProgress,device:typeof navigator!=='undefined'&&navigator.gpu?'webgpu':'wasm'}).catch(error=>{segmenterPromise=null;throw error;});
   return segmenterPromise;
 }
