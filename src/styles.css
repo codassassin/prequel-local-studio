@@ -311,3 +311,10 @@ body{overflow:hidden}
 .explore-collab-metrics b{color:#e2d1aa;font-size:13px;font-weight:500}
 .explore-collab h3{font:13px Georgia,serif;font-weight:400;color:#e6d8bc;margin:15px 0 8px}
 .explore-collab ul{padding-left:17px;margin:0;color:#aaa393;font-size:10px;line-height:1.7}
+
+/* Nine-zone spatial light map for local composition analysis */
+.explore-zone-map{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin:8px 0}
+.explore-zone-map>div{min-height:48px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:3px;background:rgba(220,205,166,calc(var(--zone-light)/180));border:1px solid #5b523e;color:#e8dfcc}
+.explore-zone-map small{font:13px Georgia,serif;color:#d8c392}
+.explore-zone-map b{font:8px ui-monospace,monospace;font-weight:400;color:#bcb4a1}
+.explore-zone-caption{font:8px ui-monospace,monospace!important;color:#898477!important;margin:3px 0 9px!important}
