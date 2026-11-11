@@ -13,7 +13,7 @@ export default function ExplorationWorkspace(){
  const [nodes,setNodes]=useState([]),[edges,setEdges]=useState([]),[offset,setOffset]=useState({x:80,y:70}),[scale,setScale]=useState(1),[selected,setSelected]=useState([]),[connectMode,setConnectMode]=useState(false),[projectName,setProjectName]=useState('Untitled exploration'),[status,setStatus]=useState('Loading local project…'),[ready,setReady]=useState(false);
  const [urls,setUrls]=useState({});
  const urlRegistry=useRef(new Map());
- const stage=useRef(null),world=useRef(null),drag=useRef(null),pan=useRef(null),fileInput=useRef(null),saveTimer=useRef(null);
+ const stage=useRef(null),world=useRef(null),drag=useRef(null),pan=useRef(null),fileInput=useRef(null),saveTimer=useRef(null),raf=useRef(0),pointer=useRef(null);
  useEffect(()=>{let alive=true;readProject().then(project=>{if(!alive)return;if(project){setNodes(project.nodes||[]);setEdges(project.edges||[]);setProjectName(project.name||'Untitled exploration');}setStatus(project?'Project restored from this device':'New local project');setReady(true);}).catch(error=>{console.error('[Stillroom workspace] IndexedDB read failed',error);setStatus('Local project storage unavailable');setReady(true);});return()=>{alive=false;};},[]);
  useEffect(()=>{
   const liveIds=new Set(nodes.map(node=>node.id));
@@ -31,21 +31,24 @@ export default function ExplorationWorkspace(){
  const selectNode=id=>{if(connectMode){setSelected(current=>{if(!current.length)return[id];if(current[0]===id)return[];setEdges(edgesNow=>[...edgesNow,{id:uid(),from:current[0],to:id}]);setConnectMode(false);return[id];});return;}setSelected([id]);};
  const applyWorldTransform=(x,y)=>{if(world.current)world.current.style.transform='translate('+x+'px,'+y+'px) scale('+scale+')';};
  const onStageDown=e=>{if(e.target!==stage.current)return;pan.current={startX:e.clientX,startY:e.clientY,x:offset.x,y:offset.y,nextX:offset.x,nextY:offset.y};stage.current.setPointerCapture(e.pointerId);setSelected([]);};
- const onStageMove=e=>{
+ const paintPointer=()=>{
+  raf.current=0;
+  const point=pointer.current;
+  if(!point)return;
   const activePan=pan.current;
-  if(activePan){activePan.nextX=activePan.x+(e.clientX-activePan.startX);activePan.nextY=activePan.y+(e.clientY-activePan.startY);applyWorldTransform(activePan.nextX,activePan.nextY);}
+  if(activePan){activePan.nextX=activePan.x+(point.x-activePan.startX);activePan.nextY=activePan.y+(point.y-activePan.startY);applyWorldTransform(activePan.nextX,activePan.nextY);}
   const activeDrag=drag.current;
-  if(!activeDrag)return;
-  const dx=(e.clientX-activeDrag.clientX)/scale,dy=(e.clientY-activeDrag.clientY)/scale;
-  activeDrag.nextX=activeDrag.x+dx;activeDrag.nextY=activeDrag.y+dy;
-  if(activeDrag.element)activeDrag.element.style.transform='translate3d('+dx+'px,'+dy+'px,0)';
+  if(activeDrag){const dx=(point.x-activeDrag.clientX)/scale,dy=(point.y-activeDrag.clientY)/scale;activeDrag.nextX=activeDrag.x+dx;activeDrag.nextY=activeDrag.y+dy;if(activeDrag.element)activeDrag.element.style.transform='translate3d('+dx+'px,'+dy+'px,0)';}
  };
+ const onStageMove=e=>{pointer.current={x:e.clientX,y:e.clientY};if(!raf.current)raf.current=requestAnimationFrame(paintPointer);};
  const onStageUp=()=>{
+  if(raf.current){cancelAnimationFrame(raf.current);raf.current=0;}
+  paintPointer();
   const activeDrag=drag.current;
   if(activeDrag){setNodes(current=>current.map(node=>node.id===activeDrag.id?{...node,x:activeDrag.nextX,y:activeDrag.nextY}:node));if(activeDrag.element)activeDrag.element.style.transform='';}
   const activePan=pan.current;
-  if(activePan){setOffset({x:activePan.nextX,y:activePan.nextY});}
-  drag.current=null;pan.current=null;
+  if(activePan)setOffset({x:activePan.nextX,y:activePan.nextY});
+  drag.current=null;pan.current=null;pointer.current=null;
  };
  const startNodeDrag=(e,node)=>{
   if(e.target.closest('button'))return;
