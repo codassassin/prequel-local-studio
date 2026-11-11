@@ -11,11 +11,28 @@ export async function loadSubjectModel(onProgress=()=>{}){
   env.allowRemoteModels=true;
   env.useBrowserCache=true;
   if(!segmenterPromise) {
+    // Transformers.js currently surfaces JSON.parse errors without the URL.
+    // Wrap fetch during model initialization so an HTML/error response tells
+    // us exactly which Hugging Face asset failed.
+    const originalFetch=globalThis.fetch;
+    const diagnosticFetch=async(input,init)=>{
+      const response=await originalFetch(input,init);
+      const url=typeof input==='string'?input:input?.url||response.url||'unknown URL';
+      const type=response.headers.get('content-type')||'';
+      if(type.includes('text/html')){
+        const snippet=(await response.clone().text()).slice(0,180).replace(/\\s+/g,' ');
+        throw new Error(`[Stillroom model fetch] HTML response: ${url} (HTTP ${response.status}, content-type ${type}). Body: ${snippet}`);
+      }
+      return response;
+    };
+    globalThis.fetch=diagnosticFetch;
     segmenterPromise=pipeline('image-segmentation',MODEL,{
       progress_callback:onProgress,
       device:'wasm',
       dtype:'fp32'
-    }).catch(error=>{segmenterPromise=null;throw error;});
+    }).catch(error=>{segmenterPromise=null;throw error;}).finally(()=>{
+      if(globalThis.fetch===diagnosticFetch)globalThis.fetch=originalFetch;
+    });
   }
   return segmenterPromise;
 }
