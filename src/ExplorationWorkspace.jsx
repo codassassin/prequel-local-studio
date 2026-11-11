@@ -13,7 +13,7 @@ export default function ExplorationWorkspace(){
  const [nodes,setNodes]=useState([]),[edges,setEdges]=useState([]),[offset,setOffset]=useState({x:80,y:70}),[scale,setScale]=useState(1),[selected,setSelected]=useState([]),[connectMode,setConnectMode]=useState(false),[projectName,setProjectName]=useState('Untitled exploration'),[status,setStatus]=useState('Loading local project…'),[ready,setReady]=useState(false);
  const [urls,setUrls]=useState({});
  const urlRegistry=useRef(new Map());
- const stage=useRef(null),drag=useRef(null),pan=useRef(null),fileInput=useRef(null),saveTimer=useRef(null);
+ const stage=useRef(null),world=useRef(null),drag=useRef(null),pan=useRef(null),fileInput=useRef(null),saveTimer=useRef(null);
  useEffect(()=>{let alive=true;readProject().then(project=>{if(!alive)return;if(project){setNodes(project.nodes||[]);setEdges(project.edges||[]);setProjectName(project.name||'Untitled exploration');}setStatus(project?'Project restored from this device':'New local project');setReady(true);}).catch(error=>{console.error('[Stillroom workspace] IndexedDB read failed',error);setStatus('Local project storage unavailable');setReady(true);});return()=>{alive=false;};},[]);
  useEffect(()=>{
   const liveIds=new Set(nodes.map(node=>node.id));
@@ -29,25 +29,29 @@ export default function ExplorationWorkspace(){
  const duplicate=()=>{const source=nodes.find(node=>node.id===selected[selected.length-1]);if(!source)return;const copy={...source,id:uid(),role:'experiment',title:source.title+' — experiment',x:source.x+42,y:source.y+48,createdAt:Date.now()};setNodes(current=>[...current,copy]);setEdges(current=>[...current,{id:uid(),from:source.id,to:copy.id}]);setSelected([copy.id]);};
  const removeSelected=()=>{setNodes(current=>current.filter(node=>!selected.includes(node.id)));setEdges(current=>current.filter(edge=>!selected.includes(edge.from)&&!selected.includes(edge.to)));setSelected([]);};
  const selectNode=id=>{if(connectMode){setSelected(current=>{if(!current.length)return[id];if(current[0]===id)return[];setEdges(edgesNow=>[...edgesNow,{id:uid(),from:current[0],to:id}]);setConnectMode(false);return[id];});return;}setSelected([id]);};
- const onStageDown=e=>{if(e.target!==stage.current)return;pan.current={x:e.clientX-offset.x,y:e.clientY-offset.y};stage.current.setPointerCapture(e.pointerId);setSelected([]);};
+ const applyWorldTransform=(x,y)=>{if(world.current)world.current.style.transform='translate('+x+'px,'+y+'px) scale('+scale+')';};
+ const onStageDown=e=>{if(e.target!==stage.current)return;pan.current={startX:e.clientX,startY:e.clientY,x:offset.x,y:offset.y,nextX:offset.x,nextY:offset.y};stage.current.setPointerCapture(e.pointerId);setSelected([]);};
  const onStageMove=e=>{
   const activePan=pan.current;
-  if(activePan)setOffset({x:e.clientX-activePan.x,y:e.clientY-activePan.y});
+  if(activePan){activePan.nextX=activePan.x+(e.clientX-activePan.startX);activePan.nextY=activePan.y+(e.clientY-activePan.startY);applyWorldTransform(activePan.nextX,activePan.nextY);}
   const activeDrag=drag.current;
   if(!activeDrag)return;
   const dx=(e.clientX-activeDrag.clientX)/scale,dy=(e.clientY-activeDrag.clientY)/scale;
-  const nextX=activeDrag.x+dx,nextY=activeDrag.y+dy,nodeId=activeDrag.id;
-  // Keep the state updater independent of mutable pointer refs: pointer-up can
-  // clear those refs before React commits a queued update.
-  setNodes(current=>current.map(node=>node.id===nodeId?{...node,x:nextX,y:nextY}:node));
+  activeDrag.nextX=activeDrag.x+dx;activeDrag.nextY=activeDrag.y+dy;
+  if(activeDrag.element)activeDrag.element.style.transform='translate3d('+dx+'px,'+dy+'px,0)';
  };
- const onStageUp=()=>{pan.current=null;drag.current=null;};
+ const onStageUp=()=>{
+  const activeDrag=drag.current;
+  if(activeDrag){setNodes(current=>current.map(node=>node.id===activeDrag.id?{...node,x:activeDrag.nextX,y:activeDrag.nextY}:node));if(activeDrag.element)activeDrag.element.style.transform='';}
+  const activePan=pan.current;
+  if(activePan){setOffset({x:activePan.nextX,y:activePan.nextY});}
+  drag.current=null;pan.current=null;
+ };
  const startNodeDrag=(e,node)=>{
   if(e.target.closest('button'))return;
   e.preventDefault();e.stopPropagation();selectNode(node.id);
   if(connectMode)return;
-  drag.current={id:node.id,clientX:e.clientX,clientY:e.clientY,x:node.x,y:node.y};
-  // Capture on the canvas so move/up/lost-capture all use one event target.
+  drag.current={id:node.id,clientX:e.clientX,clientY:e.clientY,x:node.x,y:node.y,nextX:node.x,nextY:node.y,element:e.currentTarget};
   try{stage.current?.setPointerCapture(e.pointerId);}catch(error){console.warn('[Stillroom workspace] Pointer capture unavailable',error);}
  };
  const zoomAt=delta=>setScale(value=>Math.max(.35,Math.min(1.8,Number((value+delta).toFixed(2)))));
@@ -59,7 +63,7 @@ export default function ExplorationWorkspace(){
   <header className="explore-topbar"><a href="/" className="explore-back"><ArrowLeft size={16}/> Studio</a><div className="explore-brand"><span className="explore-mark">s</span><span>stillroom</span><i>EXPLORE</i></div><input aria-label="Project name" value={projectName} onChange={e=>setProjectName(e.target.value)} /><div className="explore-save"><span>{status}</span><button onClick={save}><Save size={15}/> Save</button></div></header>
   <div className="explore-toolbar"><div className="explore-tools"><button onClick={()=>fileInput.current?.click()}><Plus size={15}/> Add photographs</button><button disabled={!selected.length} onClick={duplicate}><Copy size={14}/> Duplicate experiment</button><button className={connectMode?'active':''} disabled={nodes.length<2} onClick={()=>{setConnectMode(value=>!value);setSelected([]);}}><Link2 size={14}/> {connectMode?'Choose first node…':'Connect ideas'}</button><button disabled={!selected.length} onClick={removeSelected}><Trash2 size={14}/> Delete</button></div><div className="explore-zoom"><button aria-label="Zoom out" onClick={()=>zoomAt(-.1)}><ZoomOut size={15}/></button><span>{Math.round(scale*100)}%</span><button aria-label="Zoom in" onClick={()=>zoomAt(.1)}><ZoomIn size={15}/></button></div></div>
   <main ref={stage} className={'explore-canvas '+(connectMode?'connecting':'')} onPointerDown={onStageDown} onPointerMove={onStageMove} onPointerUp={onStageUp} onPointerCancel={onStageUp} onLostPointerCapture={onStageUp} onWheel={e=>{if(e.ctrlKey||e.metaKey){e.preventDefault();zoomAt(e.deltaY<0?.05:-.05);}}}>
-   <div className="explore-world" style={worldStyle}>
+   <div ref={world} className="explore-world" style={worldStyle}>
     <svg className="explore-edges">{edgeLines.map(edge=><g key={edge.id}><line x1={edge.x1} y1={edge.y1} x2={edge.x2} y2={edge.y2}/><circle cx={(edge.x1+edge.x2)/2} cy={(edge.y1+edge.y2)/2} r="3"/></g>)}</svg>
     {nodes.map(node=><article key={node.id} className={'explore-node '+(selected.includes(node.id)?'selected':'')} style={{left:node.x,top:node.y,width:node.width}} onPointerDown={e=>startNodeDrag(e,node)} onClick={()=>{if(!drag.current)selectNode(node.id);}}>
       <div className="explore-node-image">{urls[node.id]?<img src={urls[node.id]} draggable="false" alt={node.title}/>:<div className="explore-node-empty"><FileImage size={26}/></div>}<span>{node.role==='source'?'ORIGINAL':'EXPERIMENT'}</span></div>
