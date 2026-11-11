@@ -67,10 +67,41 @@ export default function ExplorationWorkspace(){
   }catch(error){console.error('[Stillroom local collaborator]',error);setCollabError(error.message||'Could not analyze this image.');}
   finally{bitmap?.close?.();if(objectUrl)URL.revokeObjectURL(objectUrl);setCollabBusy(false);}
  };
- const createCollaboratorBranch=suggestion=>{
-  if(!selectedNode)return;
-  const child={...selectedNode,id:uid(),role:'experiment',title:selectedNode.title+' — '+suggestion.title,x:selectedNode.x+300,y:selectedNode.y+70,createdAt:Date.now(),creativeDirection:{id:suggestion.id,title:suggestion.title,hint:suggestion.hint,source:'local-visual-analysis'}};
-  setNodes(current=>[...current,child]);setEdges(current=>[...current,{id:uid(),from:selectedNode.id,to:child.id}]);setSelected([child.id]);setCollabOpen(false);setStatus('Collaborator idea added as an experiment branch. Refine it to create the visual result.');
+ const createCollaboratorBranch=async suggestion=>{
+  if(!selectedNode?.blob||collabBusy)return;
+  setCollabBusy(true);setCollabError('');setStatus('Creating a small local preview variation…');
+  let bitmap=null,objectUrl=null;
+  try{
+   if(typeof createImageBitmap==='function'){try{bitmap=await createImageBitmap(selectedNode.blob,{resizeWidth:1536,resizeQuality:'high'});}catch(error){console.warn('[Stillroom variation] Resized bitmap unavailable; using canvas fallback.',error);}}
+   if(!bitmap){objectUrl=URL.createObjectURL(selectedNode.blob);bitmap=await new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=()=>reject(new Error('Could not decode this photograph locally.'));image.src=objectUrl;});}
+   const sourceWidth=bitmap.width||bitmap.naturalWidth,sourceHeight=bitmap.height||bitmap.naturalHeight,ratio=Math.min(1,1536/Math.max(sourceWidth,sourceHeight)),width=Math.max(1,Math.round(sourceWidth*ratio)),height=Math.max(1,Math.round(sourceHeight*ratio));
+   const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;const ctx=canvas.getContext('2d',{willReadFrequently:true});if(!ctx)throw new Error('Could not create a local preview canvas.');
+   ctx.drawImage(bitmap,0,0,width,height);const frame=ctx.getImageData(0,0,width,height),pixels=frame.data;
+   const settings={
+    'light-anchor':{contrast:1.10,brightness:-2,saturation:1.03,warm:2,shadowLift:5},
+    'depth-layers':{contrast:1.17,brightness:0,saturation:1.02,warm:0,shadowLift:8},
+    'quiet-palette':{contrast:1.04,brightness:1,saturation:.72,warm:1,shadowLift:3},
+    'shape-silence':{contrast:1.18,brightness:1,saturation:0,warm:0,shadowLift:4},
+    'cool-counterpoint':{contrast:1.04,brightness:0,saturation:.96,warm:-7,shadowLift:2},
+    'warm-counterpoint':{contrast:1.04,brightness:1,saturation:.98,warm:7,shadowLift:2},
+    'unexpected':{contrast:1.12,brightness:0,saturation:1.14,warm:-4,shadowLift:3}
+   }[suggestion.id]||{contrast:1.06,brightness:0,saturation:1,warm:0,shadowLift:2};
+   for(let i=0;i<pixels.length;i+=4){
+    let r=pixels[i],g=pixels[i+1],b=pixels[i+2],l=.2126*r+.7152*g+.0722*b;
+    const shadow=settings.shadowLift*Math.max(0,1-l/150);
+    r=(r-127.5)*settings.contrast+127.5+settings.brightness+shadow+settings.warm;
+    g=(g-127.5)*settings.contrast+127.5+settings.brightness+shadow;
+    b=(b-127.5)*settings.contrast+127.5+settings.brightness+shadow-settings.warm;
+    const y=.2126*r+.7152*g+.0722*b;
+    r=y+(r-y)*settings.saturation;g=y+(g-y)*settings.saturation;b=y+(b-y)*settings.saturation;
+    pixels[i]=Math.max(0,Math.min(255,r));pixels[i+1]=Math.max(0,Math.min(255,g));pixels[i+2]=Math.max(0,Math.min(255,b));
+   }
+   ctx.putImageData(frame,0,0);
+   const blob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error('Could not render this variation.')),'image/jpeg',.94));
+   const child={...selectedNode,id:uid(),role:'experiment',title:selectedNode.title+' — '+suggestion.title,blob,x:selectedNode.x+300,y:selectedNode.y+70,width:selectedNode.width||260,height:selectedNode.height||210,createdAt:Date.now(),creativeDirection:{id:suggestion.id,title:suggestion.title,hint:suggestion.hint,source:'local-visual-analysis',applied:true,renderSize:{width,height}}};
+   setNodes(current=>[...current,child]);setEdges(current=>[...current,{id:uid(),from:selectedNode.id,to:child.id}]);setSelected([child.id]);setCollabOpen(false);setStatus('A visual variation was created locally. Refine it further whenever you like.');
+  }catch(error){console.error('[Stillroom variation]',error);setCollabError(error.message||'Could not create this variation.');setStatus('Variation could not be created.');}
+  finally{bitmap?.close?.();if(objectUrl)URL.revokeObjectURL(objectUrl);setCollabBusy(false);}
  };
 
  const startDirection=direction=>{
@@ -135,7 +166,7 @@ export default function ExplorationWorkspace(){
    {!nodes.length&&<div className="explore-empty"><div><div className="explore-empty-icon"><FileImage size={25}/></div><h1>Begin with a photograph.</h1><p>Place an image on the canvas. Duplicate it, move ideas around, and let your experiments take shape.</p><button onClick={()=>fileInput.current?.click()}><Plus size={15}/> Add your first photograph</button><small>Your images and project are stored locally in this browser.</small></div></div>}
    {connectMode&&<div className="explore-hint"><Link2 size={14}/> Select two photographs to connect them</div>}
   </main>
-  {collabOpen&&selectedNode&&<aside className="explore-collab" aria-label="Stillroom creative collaborator"><div className="explore-discover-heading"><div><small>STILLROOM · LOCAL COLLABORATOR</small><h2>Let's explore this frame.</h2></div><button onClick={()=>setCollabOpen(false)} aria-label="Close collaborator">×</button></div><p>I'm looking at <strong>{selectedNode.title}</strong> using a reduced on-device sample. Your photograph is not uploaded. I compare spatial light and colour patterns, but I do not identify objects or understand scene semantics yet.</p>{collabBusy&&<div className="explore-collab-status">Reading a reduced preview locally…</div>}{collabError&&<div className="explore-collab-error">{collabError}<button onClick={analyzeSelectedPhoto}>Try again</button></div>}{collabResult&&<><div className="explore-collab-metrics"><span>Brightness <b>{collabResult.metrics.brightness}%</b></span><span>Contrast <b>{collabResult.metrics.contrast}%</b></span><span>Saturation <b>{collabResult.metrics.saturation}%</b></span></div><h3>What I notice</h3><ul>{collabResult.observations.map((item,i)=><li key={i}>{item}</li>)}</ul><h3>Directions worth trying</h3><div className="explore-discover-list">{collabResult.suggestions.map(suggestion=><button key={suggestion.id} onClick={()=>createCollaboratorBranch(suggestion)}><strong>{suggestion.title}</strong><span>{suggestion.reason}</span><small>Create experiment branch ↗</small></button>)}</div><button className="explore-collab-refresh" onClick={analyzeSelectedPhoto}>Analyze again</button></>}</aside>}
+  {collabOpen&&selectedNode&&<aside className="explore-collab" aria-label="Stillroom creative collaborator"><div className="explore-discover-heading"><div><small>STILLROOM · LOCAL COLLABORATOR</small><h2>Let's explore this frame.</h2></div><button onClick={()=>setCollabOpen(false)} aria-label="Close collaborator">×</button></div><p>I'm looking at <strong>{selectedNode.title}</strong> using a reduced on-device sample. Your photograph is not uploaded. I compare spatial light and colour patterns, but I do not identify objects or understand scene semantics yet.</p>{collabBusy&&<div className="explore-collab-status">Reading a reduced preview locally…</div>}{collabError&&<div className="explore-collab-error">{collabError}<button onClick={analyzeSelectedPhoto}>Try again</button></div>}{collabResult&&<><div className="explore-collab-metrics"><span>Brightness <b>{collabResult.metrics.brightness}%</b></span><span>Contrast <b>{collabResult.metrics.contrast}%</b></span><span>Saturation <b>{collabResult.metrics.saturation}%</b></span></div><h3>What I notice</h3><ul>{collabResult.observations.map((item,i)=><li key={i}>{item}</li>)}</ul><h3>Directions worth trying</h3><div className="explore-discover-list">{collabResult.suggestions.map(suggestion=><button key={suggestion.id} onClick={()=>createCollaboratorBranch(suggestion)}><strong>{suggestion.title}</strong><span>{suggestion.reason}</span><small>Create visual variation ↗</small></button>)}</div><button className="explore-collab-refresh" onClick={analyzeSelectedPhoto}>Analyze again</button></>}</aside>}
   {discoverOpen&&selectedNode&&<aside className="explore-discover" aria-label="Creative directions"><div className="explore-discover-heading"><div><small>CREATIVE DISCOVERIES</small><h2>Where could this go?</h2></div><button onClick={()=>setDiscoverOpen(false)} aria-label="Close creative directions">×</button></div><p>Choose an idea to branch from <strong>{selectedNode.title}</strong>. These are curated prompts, not AI-generated edits; your photograph stays unchanged until you refine it.</p><div className="explore-discover-list">{discoveryDirections.map(direction=><button key={direction.id} onClick={()=>startDirection(direction)}><strong>{direction.title}</strong><span>{direction.description}</span><small>Create unedited branch ↗</small></button>)}</div></aside>}
   {selectedNode?.creativeDirection&&!discoverOpen&&<aside className="explore-direction-note"><strong>{selectedNode.creativeDirection.title}</strong><span>{selectedNode.creativeDirection.hint}</span><button onClick={openSelectedInEditor}>Open in Refine ↗</button></aside>}
   <footer className="explore-footer"><span><MousePointer2 size={13}/> Drag to move · Drag empty space to pan · Ctrl/⌘ + scroll to zoom</span><span>{nodes.length} {nodes.length===1?'image':'images'} · {edges.length} connections</span></footer>
