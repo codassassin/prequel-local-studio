@@ -74,6 +74,15 @@ export async function encodeSamImage(image, onProgress) {
   const width = image.naturalWidth || image.width;
   const height = image.naturalHeight || image.height;
   if (!width || !height) throw new Error('The image is not ready for SAM 2.');
+  const imageKey = `${width}x${height}:${image.currentSrc || image.src || 'image'}`;
+  // Reuse the expensive image embedding when the user presses the button again
+  // for the same photo. Point prompts only need the much smaller decoder.
+  if (embedding && encodedImageKey === imageKey) {
+    onProgress?.({ stage: 'cached-embedding' });
+    return { width, height, cached: true };
+  }
+  onProgress?.({ stage: 'preprocessing' });
+  await new Promise(resolve => requestAnimationFrame(() => resolve()));
   const canvas = document.createElement('canvas');
   canvas.width = 1024;
   canvas.height = 1024;
@@ -90,7 +99,8 @@ export async function encodeSamImage(image, onProgress) {
   for (let i = 0; i < plane; i++) {
     for (let c = 0; c < 3; c++) tensorData[c * plane + i] = (pixels[i * 4 + c] / 255 - means[c]) / stds[c];
   }
-  onProgress?.({ stage: 'encoding' });
+  onProgress?.({ stage: 'encoder-running' });
+  const startedAt = performance.now();
   const result = await encoderSession.run({
     image: new ort.Tensor('float32', tensorData, [1, 3, 1024, 1024])
   });
@@ -99,8 +109,10 @@ export async function encodeSamImage(image, onProgress) {
     high_res_feats_0: result.high_res_feats_0,
     high_res_feats_1: result.high_res_feats_1
   };
-  encodedImageKey = `${width}x${height}:${image.src || 'image'}`;
-  return { width, height };
+  encodedImageKey = imageKey;
+  const timeMs = Math.round(performance.now() - startedAt);
+  onProgress?.({ stage: 'encoded', timeMs });
+  return { width, height, timeMs, cached: false };
 }
 
 export async function promptSam(points, image) {
