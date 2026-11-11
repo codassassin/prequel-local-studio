@@ -11,7 +11,7 @@ export async function loadSubjectModel(onProgress=()=>{}){
   env.allowRemoteModels=true;
   env.useBrowserCache=true;
   if(!segmenterPromise) {
-    segmenterPromise=pipeline('image-segmentation',MODEL,{revision:'refs/pr/20',
+    segmenterPromise=pipeline('image-segmentation',MODEL,{
       progress_callback:onProgress,
       device:'wasm',
       dtype:'fp32'
