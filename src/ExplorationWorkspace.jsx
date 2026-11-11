@@ -52,8 +52,11 @@ export default function ExplorationWorkspace(){
  };
  const startNodeDrag=(e,node)=>{
   if(e.target.closest('button'))return;
-  e.preventDefault();e.stopPropagation();selectNode(node.id);
-  if(connectMode)return;
+  e.preventDefault();e.stopPropagation();
+  // In connection mode, one click selects the first endpoint and the next
+  // click completes the connection. Do not also start a drag gesture.
+  if(connectMode){selectNode(node.id);return;}
+  selectNode(node.id);
   drag.current={id:node.id,clientX:e.clientX,clientY:e.clientY,x:node.x,y:node.y,nextX:node.x,nextY:node.y,element:e.currentTarget};
   try{stage.current?.setPointerCapture(e.pointerId);}catch(error){console.warn('[Stillroom workspace] Pointer capture unavailable',error);}
  };
@@ -68,7 +71,7 @@ export default function ExplorationWorkspace(){
   <main ref={stage} className={'explore-canvas '+(connectMode?'connecting':'')} onPointerDown={onStageDown} onPointerMove={onStageMove} onPointerUp={onStageUp} onPointerCancel={onStageUp} onLostPointerCapture={onStageUp} onWheel={e=>{if(e.ctrlKey||e.metaKey){e.preventDefault();zoomAt(e.deltaY<0?.05:-.05);}}}>
    <div ref={world} className="explore-world" style={worldStyle}>
     <svg className="explore-edges">{edgeLines.map(edge=><g key={edge.id}><line x1={edge.x1} y1={edge.y1} x2={edge.x2} y2={edge.y2}/><circle cx={(edge.x1+edge.x2)/2} cy={(edge.y1+edge.y2)/2} r="3"/></g>)}</svg>
-    {nodes.map(node=><article key={node.id} className={'explore-node '+(selected.includes(node.id)?'selected':'')} style={{left:node.x,top:node.y,width:node.width}} onPointerDown={e=>startNodeDrag(e,node)} onClick={()=>{if(!drag.current)selectNode(node.id);}}>
+    {nodes.map(node=><article key={node.id} className={'explore-node '+(selected.includes(node.id)?'selected':'')} style={{left:node.x,top:node.y,width:node.width}} onPointerDown={e=>startNodeDrag(e,node)} onClick={()=>{if(!connectMode&&!drag.current)selectNode(node.id);}}>
       <div className="explore-node-image">{urls[node.id]?<img src={urls[node.id]} draggable="false" alt={node.title}/>:<div className="explore-node-empty"><FileImage size={26}/></div>}<span>{node.role==='source'?'ORIGINAL':'EXPERIMENT'}</span></div>
       <div className="explore-node-meta"><strong>{node.title}</strong><small>{node.role==='source'?'Starting photograph':'Creative branch'}</small></div>
      </article>)}
