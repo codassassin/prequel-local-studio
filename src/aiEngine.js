@@ -12,8 +12,9 @@ export async function loadSubjectModel(onProgress=()=>{}){
   // then tries to parse as JSON ("Unexpected token '<'").
   let hasLocalModel=false;
   try {
-    const response=await fetch('/models/briaai/RMBG-1.4/config.json',{method:'HEAD',cache:'no-store'});
-    hasLocalModel=response.ok && (response.headers.get('content-type')||'').includes('application/json');
+    const response=await fetch('/models/briaai/RMBG-1.4/config.json',{method:'GET',cache:'no-store'});
+    const type=response.headers.get('content-type')||'';
+    hasLocalModel=response.ok && type.includes('application/json');
   } catch {}
   env.allowLocalModels=hasLocalModel;
   if(!segmenterPromise) segmenterPromise=pipeline('image-segmentation',MODEL,{progress_callback:onProgress,device:'wasm'}).catch(error=>{segmenterPromise=null;throw error;});
