@@ -130,7 +130,7 @@ export async function encodeSamImage(image, onProgress) {
   return { width, height, cached: false };
 }
 
-export async function promptSam(points, image) {
+export async function promptSam(points, image, previousMaskInput = null) {
   if (!decoderSession || !embedding) throw new Error('Load and encode the image with SAM 2 before selecting.');
   const width = image.naturalWidth || image.width;
   const height = image.naturalHeight || image.height;
@@ -148,8 +148,8 @@ export async function promptSam(points, image) {
     ...embedding,
     point_coords: pointTensor,
     point_labels: labelTensor,
-    mask_input: new ort.Tensor('float32', new Float32Array(256 * 256), [1, 1, 256, 256]),
-    has_mask_input: new ort.Tensor('float32', new Float32Array([0]), [1])
+    mask_input: new ort.Tensor('float32', previousMaskInput || new Float32Array(256 * 256), [1, 1, 256, 256]),
+    has_mask_input: new ort.Tensor('float32', new Float32Array([previousMaskInput ? 1 : 0]), [1])
   });
   const maskTensor = result.masks;
   const scores = result.iou_predictions.data;
@@ -158,6 +158,10 @@ export async function promptSam(points, image) {
   const maskHeight = dims[dims.length - 2];
   const maskWidth = dims[dims.length - 1];
   const logits = maskTensor.data;
+  const lowResTensor = result.low_res_masks || result.low_res_mask || null;
+  const lowResDims = lowResTensor?.dims || [];
+  const lowResPlane = lowResDims.length >= 2 ? lowResDims[lowResDims.length - 1] * lowResDims[lowResDims.length - 2] : 0;
+  const lowResCount = lowResDims.length >= 4 ? (lowResDims[1] || 1) : 1;
   const small = document.createElement('canvas');
   small.width = maskWidth;
   small.height = maskHeight;
@@ -182,6 +186,21 @@ export async function promptSam(points, image) {
     const rgba = outCtx.getImageData(0, 0, width, height).data;
     const alpha = new Uint8ClampedArray(width * height);
     for (let i = 0; i < alpha.length; i++) alpha[i] = rgba[i * 4 + 3];
+    let maskInput;
+    if (lowResTensor?.data && lowResPlane) {
+      const sourceIndex = Math.min(candidate, lowResCount - 1);
+      const offsetLow = sourceIndex * lowResPlane;
+      maskInput = new Float32Array(lowResTensor.data.slice(offsetLow, offsetLow + lowResPlane));
+      if (maskInput.length !== 256 * 256) maskInput = null;
+    }
+    if (!maskInput) {
+      maskInput = new Float32Array(256 * 256);
+      for (let y = 0; y < 256; y++) for (let x = 0; x < 256; x++) {
+        const sx = Math.min(maskWidth - 1, Math.floor(x * maskWidth / 256));
+        const sy = Math.min(maskHeight - 1, Math.floor(y * maskHeight / 256));
+        maskInput[y * 256 + x] = logits[candidate * maskWidth * maskHeight + sy * maskWidth + sx];
+      }
+    }
     candidates.push({
       data: alpha,
       width,
@@ -189,7 +208,8 @@ export async function promptSam(points, image) {
       channels: 1,
       label: `SAM 2 candidate ${candidate + 1}`,
       score: Number(scores[candidate] || 0),
-      candidateIndex: candidate
+      candidateIndex: candidate,
+      maskInput
     });
   }
   let selectedIndex = 0;
