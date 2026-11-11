@@ -1,6 +1,6 @@
 export const defaults={
  exposure:0,brightness:0,contrast:100,saturation:100,warmth:0,tint:0,fade:0,vignette:0,grain:0,blur:0,split:0,scanlines:0,
- bloom:0,halation:0,lightLeak:0,dust:0,scratches:0,teal:0,matte:0,glow:0
+ bloom:0,halation:0,lightLeak:0,dust:0,scratches:0,teal:0,matte:0,glow:0,hue:0,vibrance:0
 };
 export const presets=[
 {id:'original',name:'Original',group:'Basic',desc:'Clean, untouched image',values:{}},
@@ -30,5 +30,5 @@ export const presets=[
 ];
 export const groups=['All','Film','Warm','Cinematic','Portrait','Moody','Retro','Creative','Cool','Mono','Basic'];
 export const controls=[
-{key:'exposure',label:'Exposure',min:-100,max:100},{key:'brightness',label:'Brightness',min:-100,max:100},{key:'contrast',label:'Contrast',min:0,max:200,unit:'%'},{key:'saturation',label:'Saturation',min:0,max:200,unit:'%'},{key:'warmth',label:'Warmth',min:-100,max:100},{key:'tint',label:'Tint',min:-100,max:100},{key:'teal',label:'Teal shadows',min:0,max:100},{key:'fade',label:'Fade',min:0,max:100},{key:'matte',label:'Matte blacks',min:0,max:100},{key:'vignette',label:'Vignette',min:0,max:100},{key:'grain',label:'Film grain',min:0,max:100},{key:'halation',label:'Film halation',min:0,max:100},{key:'bloom',label:'Highlight bloom',min:0,max:100},{key:'glow',label:'Soft glow',min:0,max:100},{key:'lightLeak',label:'Light leak',min:0,max:100},{key:'dust',label:'Dust',min:0,max:100},{key:'scratches',label:'Scratches',min:0,max:100},{key:'blur',label:'Soft focus',min:0,max:12,unit:'px'},{key:'split',label:'Chromatic aberration',min:0,max:12,unit:'px'},{key:'scanlines',label:'Scanlines',min:0,max:100}
+{key:'exposure',label:'Exposure',min:-100,max:100},{key:'brightness',label:'Brightness',min:-100,max:100},{key:'contrast',label:'Contrast',min:0,max:200,unit:'%'},{key:'saturation',label:'Saturation',min:0,max:200,unit:'%'},{key:'vibrance',label:'Vibrance',min:-100,max:100},{key:'hue',label:'Hue shift',min:-180,max:180,unit:'°'},{key:'warmth',label:'Warmth',min:-100,max:100},{key:'tint',label:'Tint',min:-100,max:100},{key:'teal',label:'Teal shadows',min:0,max:100},{key:'fade',label:'Fade',min:0,max:100},{key:'matte',label:'Matte blacks',min:0,max:100},{key:'vignette',label:'Vignette',min:0,max:100},{key:'grain',label:'Film grain',min:0,max:100},{key:'halation',label:'Film halation',min:0,max:100},{key:'bloom',label:'Highlight bloom',min:0,max:100},{key:'glow',label:'Soft glow',min:0,max:100},{key:'lightLeak',label:'Light leak',min:0,max:100},{key:'dust',label:'Dust',min:0,max:100},{key:'scratches',label:'Scratches',min:0,max:100},{key:'blur',label:'Soft focus',min:0,max:12,unit:'px'},{key:'split',label:'Chromatic aberration',min:0,max:12,unit:'px'},{key:'scanlines',label:'Scanlines',min:0,max:100}
 ];
