@@ -1,4 +1,4 @@
-import{useCallback,useEffect,useRef,useState}from'react';import{Aperture,ArrowDownToLine,ArrowLeftRight,Check,ImagePlus,RotateCcw,SlidersHorizontal,WandSparkles,ZoomIn,ZoomOut}from'lucide-react';import{controls,defaults,presets}from'./presets';import{renderImage}from'./imageEngine';
+import React,{useCallback,useEffect,useRef,useState}from'react';import{Aperture,ArrowDownToLine,ArrowLeftRight,Check,ImagePlus,RotateCcw,SlidersHorizontal,WandSparkles,ZoomIn,ZoomOut}from'lucide-react';import{controls,defaults,presets}from'./presets';import{renderImage}from'./imageEngine';
 const groups=['All','Warm','Film','Moody','Retro','Cool','Mono'];
 export default function App(){
  const[photo,setPhoto]=useState(null),[name,setName]=useState(''),[v,setV]=useState(defaults),[preset,setPreset]=useState('original'),[group,setGroup]=useState('All'),[compare,setCompare]=useState(false),[tab,setTab]=useState('presets'),[zoom,setZoom]=useState(1),[format,setFormat]=useState('image/jpeg'),[notice,setNotice]=useState('');
