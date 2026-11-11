@@ -5,13 +5,15 @@ let segmenterPromise;
 export function modelInfo(){return {id:MODEL,cache:'browser-cache'};}
 export async function loadSubjectModel(onProgress=()=>{}){
   env.allowRemoteModels=true; env.useBrowserCache=true; env.cacheKey='stillroom-ai-models-v1';
-  if(!segmenterPromise) segmenterPromise=pipeline('background-removal',MODEL,{progress_callback:onProgress,device:typeof navigator!=='undefined'&&navigator.gpu?'webgpu':'wasm'}).catch(error=>{segmenterPromise=null;throw error;});
+  if(!segmenterPromise) segmenterPromise=pipeline('image-segmentation',MODEL,{progress_callback:onProgress,device:typeof navigator!=='undefined'&&navigator.gpu?'webgpu':'wasm'}).catch(error=>{segmenterPromise=null;throw error;});
   return segmenterPromise;
 }
 export async function segmentSubject(image,onProgress){
-  const model=await loadSubjectModel(onProgress); const result=await model(image); const output=Array.isArray(result)?result[0]:result;
-  if(!output?.data||!output.width||!output.height) throw new Error('The segmentation model returned an unsupported mask.');
-  return {data:new Uint8ClampedArray(output.data),width:output.width,height:output.height,channels:output.channels||4};
+  const model=await loadSubjectModel(onProgress); const result=await model(image); const segments=Array.isArray(result)?result:[];
+  if(!segments.length) throw new Error('The model did not return a foreground mask.');
+  const output=segments.find(item=>item.label==='foreground')||segments[0],raw=output.mask||output;
+  if(!raw?.data||!raw.width||!raw.height) throw new Error('The segmentation model returned an unsupported mask.');
+  return {data:new Uint8ClampedArray(raw.data),width:raw.width,height:raw.height,channels:raw.channels||1,label:output.label||'foreground'};
 }
 export function analysePhoto(image,mask){
   const iw=image.naturalWidth||image.width,ih=image.naturalHeight||image.height,canvas=document.createElement('canvas'),max=320,scale=Math.min(1,max/Math.max(iw,ih));
