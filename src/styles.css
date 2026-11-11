@@ -104,3 +104,15 @@ body{overflow:hidden}
  .preset-grid{max-height:65vh;overflow-y:auto}
  .adjust-panel{max-height:none;overflow:visible}
 }
+
+/* Live thumbnails are rendered from the currently loaded local photo */
+.preset-swatch{display:block;padding:0;isolation:isolate;overflow:hidden;background:#282720}
+.look-thumb{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover}
+.preset-swatch:before{z-index:1;pointer-events:none}
+.preset-swatch:after{z-index:2;pointer-events:none}
+.swatch-index,.swatch-name{z-index:3;position:absolute}
+.swatch-index{top:7px;left:8px}
+.swatch-name{right:8px;bottom:8px;max-width:calc(100% - 45px);text-align:right}
+.thumb-placeholder{position:absolute;z-index:3;left:8px;right:8px;top:50%;transform:translateY(-50%);text-align:center;color:#fff9;font:7px ui-monospace,monospace;letter-spacing:1px;text-shadow:0 1px 8px #000}
+.preset-card:disabled{opacity:1}
+.preset-card:disabled .look-thumb{filter:saturate(.8) brightness(.78)}
