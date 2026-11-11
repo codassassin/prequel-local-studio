@@ -1,6 +1,6 @@
 import { env, pipeline, RawImage } from '@huggingface/transformers';
 
-const MODEL = 'Xenova/modnet';
+const MODEL = 'briaai/RMBG-1.4';
 let segmenterPromise;
 export function modelInfo(){return {id:MODEL,cache:'browser-cache'};}
 export async function loadSubjectModel(onProgress=()=>{}){
@@ -11,7 +11,7 @@ export async function loadSubjectModel(onProgress=()=>{}){
   env.allowRemoteModels=true;
   env.useBrowserCache=true;
   if(!segmenterPromise) {
-    segmenterPromise=pipeline('background-removal',MODEL,{
+    segmenterPromise=pipeline('image-segmentation',MODEL,{
       progress_callback:onProgress,
       device:'wasm',
       dtype:'fp32'
@@ -21,10 +21,7 @@ export async function loadSubjectModel(onProgress=()=>{}){
 }
 export async function segmentSubject(image,onProgress){
   const model=await loadSubjectModel(onProgress);
-  // Transformers.js accepts RawImage, Blob, URL, string or canvas inputs;
-  // HTMLImageElement is not a supported pipeline input. Convert locally.
-  const iw=image.naturalWidth||image.width;
-  const ih=image.naturalHeight||image.height;
+  const iw=image.naturalWidth||image.width,ih=image.naturalHeight||image.height;
   if(!iw||!ih) throw new Error('The selected photo has not finished loading.');
   const max=1024,scale=Math.min(1,max/Math.max(iw,ih));
   const canvas=document.createElement('canvas');
@@ -34,18 +31,26 @@ export async function segmentSubject(image,onProgress){
   ctx.drawImage(image,0,0,canvas.width,canvas.height);
   const input=RawImage.fromCanvas(canvas);
   const result=await model(input);
-  const output=Array.isArray(result)?result[0]:result;
-  // BackgroundRemovalPipeline returns one RGBA RawImage, not an array.
-  if(!output?.data||!output.width||!output.height||output.channels!==4){
-    throw new Error('MODNet returned an unexpected output. Expected an RGBA foreground matte.');
+  // RMBG-1.4 is a general saliency model. Its image-segmentation task
+  // returns segment records whose mask is a single-channel RawImage.
+  const segments=Array.isArray(result)?result:[result];
+  const candidates=segments.filter(item=>item?.mask?.data&&item.mask.width&&item.mask.height);
+  if(!candidates.length){
+    throw new Error('RMBG-1.4 did not return a segmentation mask. Check model access and browser console.');
   }
-  return {
-    data:new Uint8ClampedArray(output.data),
-    width:output.width,
-    height:output.height,
-    channels:4,
-    label:'foreground'
-  };
+  const selected=candidates.find(item=>/foreground|object|salient/i.test(item.label||''))||candidates[0];
+  const raw=selected.mask;
+  const data=new Uint8ClampedArray(raw.data.length);
+  // Normalise supported uint8/float mask outputs to an 8-bit alpha matte.
+  let min=Infinity,maxValue=-Infinity;
+  for(let i=0;i<raw.data.length;i++){const v=Number(raw.data[i]);if(v<min)min=v;if(v>maxValue)maxValue=v;}
+  const range=maxValue-min||1;
+  for(let i=0;i<raw.data.length;i++){
+    const v=Number(raw.data[i]);
+    data[i]=raw.data instanceof Uint8Array||raw.data instanceof Uint8ClampedArray
+      ?v:Math.round(Math.max(0,Math.min(1,(v-min)/range))*255);
+  }
+  return {data,width:raw.width,height:raw.height,channels:1,label:selected.label||'foreground'};
 }
 export function analysePhoto(image,mask){
   const iw=image.naturalWidth||image.width,ih=image.naturalHeight||image.height,canvas=document.createElement('canvas'),max=320,scale=Math.min(1,max/Math.max(iw,ih));
