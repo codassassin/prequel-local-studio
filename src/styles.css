@@ -318,3 +318,15 @@ body{overflow:hidden}
 .explore-zone-map small{font:13px Georgia,serif;color:#d8c392}
 .explore-zone-map b{font:8px ui-monospace,monospace;font-weight:400;color:#bcb4a1}
 .explore-zone-caption{font:8px ui-monospace,monospace!important;color:#898477!important;margin:3px 0 9px!important}
+
+/* Editable experiment intensity controls */
+.explore-intensity-panel{position:absolute;z-index:5;left:18px;bottom:18px;width:min(310px,calc(100% - 36px));display:flex;flex-direction:column;gap:9px;padding:14px;background:#201f1af5;border:1px solid #8c7950;box-shadow:0 12px 35px #0009;color:#e9e1d2}
+.explore-intensity-panel>div{display:flex;flex-direction:column;gap:5px}
+.explore-intensity-panel>div small{font:8px ui-monospace,monospace;letter-spacing:1.2px;color:#b7a477}
+.explore-intensity-panel>div strong{font:16px Georgia,serif;font-weight:400;color:#e5d7b8}
+.explore-intensity-panel label{display:flex;justify-content:space-between;font-size:10px;color:#b9b2a3}
+.explore-intensity-panel output{font:10px ui-monospace,monospace;color:#d8c397}
+.explore-intensity-panel input[type=range]{width:100%;accent-color:#c9b582}
+.explore-intensity-panel p{font-size:9px;line-height:1.5;color:#999384;margin:0}
+.explore-intensity-panel button{align-self:flex-start;background:#d0bd8f;border:0;color:#171611;padding:8px 12px;font-size:10px;font-weight:600}
+.explore-intensity-panel button:disabled{opacity:.4}
