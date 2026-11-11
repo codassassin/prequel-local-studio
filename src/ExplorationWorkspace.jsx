@@ -9,9 +9,30 @@ function openDb(){return new Promise((resolve,reject)=>{const request=indexedDB.
 async function readProject(){const db=await openDb();return new Promise((resolve,reject)=>{const request=db.transaction(STORE,'readonly').objectStore(STORE).get(PROJECT_ID);request.onsuccess=()=>resolve(request.result||null);request.onerror=()=>reject(request.error);});}
 async function writeProject(project){const db=await openDb();return new Promise((resolve,reject)=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).put(project);tx.oncomplete=()=>resolve();tx.onerror=()=>reject(tx.error);});}
 
+async function renderExperimentBlob(sourceBlob,settings,intensity){
+ let bitmap=null,url=null;
+ try{
+  if(typeof createImageBitmap==='function'){try{bitmap=await createImageBitmap(sourceBlob,{resizeWidth:1536,resizeQuality:'high'});}catch(error){console.warn('[Stillroom experiment] Resized bitmap unavailable; using image fallback.',error);}}
+  if(!bitmap){url=URL.createObjectURL(sourceBlob);bitmap=await new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=()=>reject(new Error('Could not decode the experiment source.'));image.src=url;});}
+  const sw=bitmap.width||bitmap.naturalWidth,sh=bitmap.height||bitmap.naturalHeight,ratio=Math.min(1,1536/Math.max(sw,sh)),width=Math.max(1,Math.round(sw*ratio)),height=Math.max(1,Math.round(sh*ratio)),canvas=document.createElement('canvas');
+  canvas.width=width;canvas.height=height;const ctx=canvas.getContext('2d',{willReadFrequently:true});if(!ctx)throw new Error('Could not create a local variation canvas.');
+  ctx.drawImage(bitmap,0,0,width,height);const frame=ctx.getImageData(0,0,width,height),pixels=frame.data,t=Math.max(0,Math.min(1,intensity/100));
+  for(let i=0;i<pixels.length;i+=4){
+   let r=pixels[i],g=pixels[i+1],b=pixels[i+2],l=.2126*r+.7152*g+.0722*b;
+   const contrast=1+(settings.contrast-1)*t,brightness=settings.brightness*t,saturation=1+(settings.saturation-1)*t,warm=settings.warm*t,shadow=settings.shadowLift*t*Math.max(0,1-l/150);
+   r=(r-127.5)*contrast+127.5+brightness+shadow+warm;g=(g-127.5)*contrast+127.5+brightness+shadow;b=(b-127.5)*contrast+127.5+brightness+shadow-warm;
+   const y=.2126*r+.7152*g+.0722*b;r=y+(r-y)*saturation;g=y+(g-y)*saturation;b=y+(b-y)*saturation;
+   pixels[i]=Math.max(0,Math.min(255,r));pixels[i+1]=Math.max(0,Math.min(255,g));pixels[i+2]=Math.max(0,Math.min(255,b));
+  }
+  ctx.putImageData(frame,0,0);
+  const blob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error('Could not render this variation.')),'image/jpeg',.94));
+  return {blob,width,height};
+ }finally{bitmap?.close?.();if(url)URL.revokeObjectURL(url);}
+}
+
 export default function ExplorationWorkspace(){
  const [nodes,setNodes]=useState([]),[edges,setEdges]=useState([]),[offset,setOffset]=useState({x:80,y:70}),[scale,setScale]=useState(1),[selected,setSelected]=useState([]),[connectMode,setConnectMode]=useState(false),[projectName,setProjectName]=useState('Untitled exploration'),[status,setStatus]=useState('Loading local project…'),[ready,setReady]=useState(false);
- const [urls,setUrls]=useState({});
+ const [urls,setUrls]=useState({}),[variationIntensity,setVariationIntensity]=useState(100),[variationBusy,setVariationBusy]=useState(false);
  const [discoverOpen,setDiscoverOpen]=useState(false),[collabOpen,setCollabOpen]=useState(false),[collabBusy,setCollabBusy]=useState(false),[collabResult,setCollabResult]=useState(null),[collabError,setCollabError]=useState('');
  const urlRegistry=useRef(new Map());
  const stage=useRef(null),world=useRef(null),drag=useRef(null),pan=useRef(null),fileInput=useRef(null),saveTimer=useRef(null),raf=useRef(0),pointer=useRef(null);
@@ -35,6 +56,7 @@ export default function ExplorationWorkspace(){
   {id:'unexpected',title:'Against the mood',description:'Invert the expected feeling of the photograph using contrasting colour and light.',hint:'In Refine: choose a look outside your usual category and refine manually.'}
  ];
  const selectedNode=nodes.find(node=>node.id===selected[selected.length-1]);
+ useEffect(()=>{setVariationIntensity(selectedNode?.creativeDirection?.intensity??100);},[selectedNode?.id]);
  const analyzeSelectedPhoto=async()=>{
   if(!selectedNode?.blob)return;
   setCollabBusy(true);setCollabError('');setCollabResult(null);
@@ -98,12 +120,22 @@ export default function ExplorationWorkspace(){
    }
    ctx.putImageData(frame,0,0);
    const blob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error('Could not render this variation.')),'image/jpeg',.94));
-   const child={...selectedNode,id:uid(),role:'experiment',title:selectedNode.title+' — '+suggestion.title,blob,x:selectedNode.x+300,y:selectedNode.y+70,width:selectedNode.width||260,height:selectedNode.height||210,createdAt:Date.now(),creativeDirection:{id:suggestion.id,title:suggestion.title,hint:suggestion.hint,source:'local-visual-analysis',applied:true,renderSize:{width,height}}};
+   const child={...selectedNode,id:uid(),role:'experiment',title:selectedNode.title+' — '+suggestion.title,blob,x:selectedNode.x+300,y:selectedNode.y+70,width:selectedNode.width||260,height:selectedNode.height||210,createdAt:Date.now(),creativeDirection:{id:suggestion.id,title:suggestion.title,hint:suggestion.hint,source:'local-visual-analysis',applied:true,baseBlob:selectedNode.blob,settings,intensity:100,renderSize:{width,height}}};
    setNodes(current=>[...current,child]);setEdges(current=>[...current,{id:uid(),from:selectedNode.id,to:child.id}]);setSelected([child.id]);setCollabOpen(false);setStatus('A visual variation was created locally. Refine it further whenever you like.');
   }catch(error){console.error('[Stillroom variation]',error);setCollabError(error.message||'Could not create this variation.');setStatus('Variation could not be created.');}
   finally{bitmap?.close?.();if(objectUrl)URL.revokeObjectURL(objectUrl);setCollabBusy(false);}
  };
 
+ const applyVariationIntensity=async()=>{
+  if(!selectedNode?.creativeDirection?.baseBlob||!selectedNode.creativeDirection.settings||variationBusy)return;
+  setVariationBusy(true);setStatus('Re-rendering experiment from its preserved source…');
+  try{
+   const rendered=await renderExperimentBlob(selectedNode.creativeDirection.baseBlob,selectedNode.creativeDirection.settings,variationIntensity);
+   setNodes(current=>current.map(node=>node.id===selectedNode.id?{...node,blob:rendered.blob,creativeDirection:{...node.creativeDirection,intensity:variationIntensity,renderSize:{width:rendered.width,height:rendered.height}}}:node));
+   setStatus('Experiment intensity updated from its preserved source.');
+  }catch(error){console.error('[Stillroom experiment intensity]',error);setStatus(error.message||'Could not update experiment intensity.');}
+  finally{setVariationBusy(false);}
+ };
  const startDirection=direction=>{
   if(!selectedNode)return;
   const source=selectedNode;
@@ -168,6 +200,7 @@ export default function ExplorationWorkspace(){
   </main>
   {collabOpen&&selectedNode&&<aside className="explore-collab" aria-label="Stillroom creative collaborator"><div className="explore-discover-heading"><div><small>STILLROOM · LOCAL COLLABORATOR</small><h2>Let's explore this frame.</h2></div><button onClick={()=>setCollabOpen(false)} aria-label="Close collaborator">×</button></div><p>I'm looking at <strong>{selectedNode.title}</strong> using a reduced on-device sample. Your photograph is not uploaded. I compare spatial light and colour patterns, but I do not identify objects or understand scene semantics yet.</p>{collabBusy&&<div className="explore-collab-status">Reading a reduced preview locally…</div>}{collabError&&<div className="explore-collab-error">{collabError}<button onClick={analyzeSelectedPhoto}>Try again</button></div>}{collabResult&&<><div className="explore-collab-metrics"><span>Brightness <b>{collabResult.metrics.brightness}%</b></span><span>Contrast <b>{collabResult.metrics.contrast}%</b></span><span>Saturation <b>{collabResult.metrics.saturation}%</b></span></div><h3>What I notice</h3><ul>{collabResult.observations.map((item,i)=><li key={i}>{item}</li>)}</ul><h3>Directions worth trying</h3><div className="explore-discover-list">{collabResult.suggestions.map(suggestion=><button key={suggestion.id} onClick={()=>createCollaboratorBranch(suggestion)}><strong>{suggestion.title}</strong><span>{suggestion.reason}</span><small>Create visual variation ↗</small></button>)}</div><button className="explore-collab-refresh" onClick={analyzeSelectedPhoto}>Analyze again</button></>}</aside>}
   {discoverOpen&&selectedNode&&<aside className="explore-discover" aria-label="Creative directions"><div className="explore-discover-heading"><div><small>CREATIVE DISCOVERIES</small><h2>Where could this go?</h2></div><button onClick={()=>setDiscoverOpen(false)} aria-label="Close creative directions">×</button></div><p>Choose an idea to branch from <strong>{selectedNode.title}</strong>. These are curated prompts, not AI-generated edits; your photograph stays unchanged until you refine it.</p><div className="explore-discover-list">{discoveryDirections.map(direction=><button key={direction.id} onClick={()=>startDirection(direction)}><strong>{direction.title}</strong><span>{direction.description}</span><small>Create unedited branch ↗</small></button>)}</div></aside>}
+  {selectedNode?.creativeDirection?.baseBlob&&<aside className="explore-intensity-panel"><div><small>EXPERIMENT CONTROLS</small><strong>{selectedNode.creativeDirection.title}</strong></div><label>Intensity <output>{variationIntensity}%</output></label><input type="range" min="0" max="150" step="5" value={variationIntensity} onChange={e=>setVariationIntensity(Number(e.target.value))}/><p>Changes are rendered again from the preserved source image, not from the already-edited result.</p><button disabled={variationBusy||variationIntensity===(selectedNode.creativeDirection.intensity??100)} onClick={applyVariationIntensity}>{variationBusy?'Rendering…':'Apply intensity'}</button></aside>}
   {selectedNode?.creativeDirection&&!discoverOpen&&<aside className="explore-direction-note"><strong>{selectedNode.creativeDirection.title}</strong><span>{selectedNode.creativeDirection.hint}</span><button onClick={openSelectedInEditor}>Open in Refine ↗</button></aside>}
   <footer className="explore-footer"><span><MousePointer2 size={13}/> Drag to move · Drag empty space to pan · Ctrl/⌘ + scroll to zoom</span><span>{nodes.length} {nodes.length===1?'image':'images'} · {edges.length} connections</span></footer>
   <input ref={fileInput} hidden type="file" accept="image/*" multiple onChange={e=>{importFiles(e.target.files||[]);e.target.value='';}}/>
