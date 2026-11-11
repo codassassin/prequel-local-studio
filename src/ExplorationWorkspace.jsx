@@ -31,16 +31,25 @@ export default function ExplorationWorkspace(){
  const selectNode=id=>{if(connectMode){setSelected(current=>{if(!current.length)return[id];if(current[0]===id)return[];setEdges(edgesNow=>[...edgesNow,{id:uid(),from:current[0],to:id}]);setConnectMode(false);return[id];});return;}setSelected([id]);};
  const onStageDown=e=>{if(e.target!==stage.current)return;pan.current={x:e.clientX-offset.x,y:e.clientY-offset.y};stage.current.setPointerCapture(e.pointerId);setSelected([]);};
  const onStageMove=e=>{
-  if(pan.current)setOffset({x:e.clientX-pan.current.x,y:e.clientY-pan.current.y});
+  const activePan=pan.current;
+  if(activePan)setOffset({x:e.clientX-activePan.x,y:e.clientY-activePan.y});
   const activeDrag=drag.current;
-  if(activeDrag){
-   const dx=(e.clientX-activeDrag.clientX)/scale,dy=(e.clientY-activeDrag.clientY)/scale;
-   const nextX=activeDrag.x+dx,nextY=activeDrag.y+dy,nodeId=activeDrag.id;
-   setNodes(current=>current.map(node=>node.id===nodeId?{...node,x:nextX,y:nextY}:node));
-  }
+  if(!activeDrag)return;
+  const dx=(e.clientX-activeDrag.clientX)/scale,dy=(e.clientY-activeDrag.clientY)/scale;
+  const nextX=activeDrag.x+dx,nextY=activeDrag.y+dy,nodeId=activeDrag.id;
+  // Keep the state updater independent of mutable pointer refs: pointer-up can
+  // clear those refs before React commits a queued update.
+  setNodes(current=>current.map(node=>node.id===nodeId?{...node,x:nextX,y:nextY}:node));
  };
  const onStageUp=()=>{pan.current=null;drag.current=null;};
- const startNodeDrag=(e,node)=>{if(e.target.closest('button'))return;e.stopPropagation();selectNode(node.id);if(connectMode)return;drag.current={id:node.id,clientX:e.clientX,clientY:e.clientY,x:node.x,y:node.y};e.currentTarget.setPointerCapture(e.pointerId);};
+ const startNodeDrag=(e,node)=>{
+  if(e.target.closest('button'))return;
+  e.preventDefault();e.stopPropagation();selectNode(node.id);
+  if(connectMode)return;
+  drag.current={id:node.id,clientX:e.clientX,clientY:e.clientY,x:node.x,y:node.y};
+  // Capture on the canvas so move/up/lost-capture all use one event target.
+  try{stage.current?.setPointerCapture(e.pointerId);}catch(error){console.warn('[Stillroom workspace] Pointer capture unavailable',error);}
+ };
  const zoomAt=delta=>setScale(value=>Math.max(.35,Math.min(1.8,Number((value+delta).toFixed(2)))));
  const nodeById=id=>nodes.find(node=>node.id===id);
  const worldStyle={transform:'translate('+offset.x+'px,'+offset.y+'px) scale('+scale+')',transformOrigin:'0 0'};
