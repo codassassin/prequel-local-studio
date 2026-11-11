@@ -46,3 +46,61 @@
 .swatch-moody{background:linear-gradient(135deg,#172326,#45564c,#a36d4b)}
 .swatch-editorial{background:linear-gradient(135deg,#2c3548,#a9a39a,#d5a477)}
 @media(max-width:700px){.sidebar{height:auto;position:static;overflow:visible}.preset-panel{max-height:70vh}.preset-grid{grid-template-columns:repeat(2,minmax(0,1fr));min-height:260px}.group-list{overflow-x:auto}.sidebar-bottom{padding-top:16px}}
+
+
+/* Fixed desktop editing viewport: only the tool panels scroll */
+html,body,#root{height:100%;min-height:0}
+body{overflow:hidden}
+.app{height:100dvh;min-height:0;overflow:hidden}
+.layout{height:calc(100dvh - 72px);min-height:0;overflow:hidden}
+.workspace{height:100%;min-height:0;overflow:hidden}
+.workspace-head,.workspace-foot{flex-shrink:0}
+.stage{min-height:0;min-width:0;overflow:hidden;flex:1}
+.preview-wrap{width:100%;height:100%;min-height:0;min-width:0}
+.preview-wrap canvas{max-width:100%;max-height:100%}
+.sidebar{height:100%;min-height:0;position:relative;top:auto;overflow:hidden}
+.sidebar-bottom{flex-shrink:0}
+.preset-panel,.adjust-panel{min-height:0}
+.preset-grid{overscroll-behavior:contain}
+.group-list{overscroll-behavior-x:contain}
+/* More vivid, art-directed effect tiles */
+.preset-swatch{isolation:isolate;border-radius:2px;min-height:92px;box-shadow:inset 0 0 0 1px #ffffff12,0 5px 16px #0003;transition:transform .22s ease,filter .22s ease,box-shadow .22s ease}
+.preset-card:hover:not(:disabled) .preset-swatch{transform:translateY(-2px);filter:saturate(1.18);box-shadow:inset 0 0 0 1px #ffffff25,0 9px 22px #0005}
+.preset-swatch:after{content:"";position:absolute;inset:0;z-index:-1;opacity:.35;background-image:radial-gradient(#fff8 .55px,transparent .8px);background-size:4px 4px;mix-blend-mode:soft-light;pointer-events:none}
+.swatch-mark{font-size:21px!important;letter-spacing:1px!important;text-shadow:0 2px 14px #0008!important}
+.swatch-name{font-size:8px!important;letter-spacing:1.1px!important;text-transform:uppercase}
+.swatch-portra{background:radial-gradient(ellipse at 78% 18%,#f6d3a3 0,transparent 38%),linear-gradient(135deg,#61402f,#c17e55 48%,#9a9874)}
+.swatch-golden{background:radial-gradient(circle at 76% 18%,#fff0b4 0,transparent 24%),linear-gradient(145deg,#63341e,#e99b43 55%,#70432c)}
+.swatch-amber{background:radial-gradient(circle at 65% 24%,#ffe2a0 0,transparent 25%),linear-gradient(135deg,#8b3d1e,#e68a36 54%,#5b3024)}
+.swatch-cinestill{background:radial-gradient(circle at 68% 25%,#f4a27d 0,transparent 27%),linear-gradient(135deg,#102e43,#7c3c51 52%,#e18a62)}
+.swatch-kodak{background:radial-gradient(circle at 20% 18%,#ffdf9c 0,transparent 27%),linear-gradient(135deg,#8a552b,#d99a4f 58%,#6c6742)}
+.swatch-fujifilm{background:radial-gradient(circle at 76% 20%,#f4e8ce 0,transparent 25%),linear-gradient(135deg,#526c58,#a8b38d 52%,#d7b99b)}
+.swatch-polaroid{background:linear-gradient(135deg,#b08d77,#e4c9a8 48%,#89917c)}
+.swatch-vhs{background:repeating-linear-gradient(0deg,#4a3554 0 3px,#7d4e76 3px 5px,#c47760 5px 7px)}
+.swatch-90s{background:radial-gradient(circle at 75% 15%,#ffe3a2 0,transparent 25%),linear-gradient(135deg,#51436d,#d17d58 52%,#d4ae6b)}
+.swatch-cinema{background:radial-gradient(circle at 78% 18%,#f5b16d 0,transparent 30%),linear-gradient(135deg,#0d4554,#28717a 48%,#d07843)}
+.swatch-noir,.swatch-silver{background:linear-gradient(135deg,#080909,#55595a 48%,#e0dfd6)}
+.swatch-dream{background:radial-gradient(circle at 65% 20%,#fff4db 0,transparent 34%),linear-gradient(135deg,#9e7893,#e8bba9 54%,#9eb4b4)}
+.swatch-leak{background:radial-gradient(ellipse at 10% 0%,#fff0b0 0,transparent 28%),radial-gradient(ellipse at 0 100%,#f05a36 0,transparent 42%),linear-gradient(135deg,#41354c,#98708a 60%,#d7a06e)}
+.swatch-dusty{background:radial-gradient(circle at 50% 45%,#c5b18d 0 1px,transparent 2px),linear-gradient(135deg,#3e332c,#9a8064 55%,#d0c0a0);background-size:9px 9px,auto}
+.swatch-bluehour{background:radial-gradient(circle at 70% 20%,#d3dbe4 0,transparent 22%),linear-gradient(135deg,#12233f,#426c8c 55%,#a8b5bd)}
+.swatch-arctic{background:linear-gradient(135deg,#213c59,#86a9bb 54%,#e0ded4)}
+.swatch-moody{background:radial-gradient(ellipse at 75% 10%,#a46b4d 0,transparent 28%),linear-gradient(135deg,#101a1c,#34443e 58%,#6d5947)}
+.swatch-olive{background:linear-gradient(135deg,#303d2c,#78815a 55%,#c0a982)}
+.swatch-softmono{background:linear-gradient(135deg,#343536,#8e9290 52%,#d7d4c9)}
+.swatch-peach{background:radial-gradient(circle at 70% 15%,#ffe3c9 0,transparent 27%),linear-gradient(135deg,#9d5f50,#e9ae91 52%,#d7c1a6)}
+.swatch-editorial{background:radial-gradient(circle at 70% 16%,#fff1d2 0,transparent 23%),linear-gradient(135deg,#29394d,#92918b 55%,#c58b65)}
+.swatch-pastel{background:radial-gradient(circle at 80% 20%,#fff1e7 0,transparent 25%),linear-gradient(135deg,#a48aa8,#e7c2bc 52%,#a9c3bb)}
+@media(max-width:700px){
+ html,body,#root{height:auto;min-height:100%}
+ body{overflow:auto}
+ .app{height:auto;min-height:100dvh;overflow:visible}
+ .layout{height:auto;min-height:0;overflow:visible}
+ .workspace{height:auto;min-height:65vh;overflow:visible}
+ .stage{min-height:380px;flex:none}
+ .preview-wrap{height:auto;min-height:380px}
+ .sidebar{height:auto;min-height:620px;overflow:visible}
+ .preset-panel{max-height:none;overflow:visible}
+ .preset-grid{max-height:65vh;overflow-y:auto}
+ .adjust-panel{max-height:none;overflow:visible}
+}
