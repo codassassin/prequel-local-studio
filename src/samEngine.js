@@ -9,6 +9,8 @@ let encoderSession;
 let decoderSession;
 let embedding;
 let encodedImageKey = '';
+let encodedImageElement = null;
+let encodedImageSize = '';
 
 async function cachedModelFile(name, onProgress = () => {}) {
   const url = `${BASE}/${name}`;
@@ -74,33 +76,38 @@ export async function encodeSamImage(image, onProgress) {
   const width = image.naturalWidth || image.width;
   const height = image.naturalHeight || image.height;
   if (!width || !height) throw new Error('The image is not ready for SAM 2.');
-  const imageKey = `${width}x${height}:${image.currentSrc || image.src || 'image'}`;
-  // Reuse the expensive image embedding when the user presses the button again
-  // for the same photo. Point prompts only need the much smaller decoder.
-  if (embedding && encodedImageKey === imageKey) {
-    onProgress?.({ stage: 'cached-embedding' });
+  const sizeKey = `${width}x${height}:${image.currentSrc || image.src || ''}`;
+  // The image encoder is the expensive stage. Reuse its embedding for repeated
+  // clicks and button presses on the same image instead of encoding it again.
+  if (embedding && encodedImageElement === image && encodedImageSize === sizeKey) {
+    onProgress?.({ stage: 'encoding-cached', width, height });
     return { width, height, cached: true };
   }
-  onProgress?.({ stage: 'preprocessing' });
-  await new Promise(resolve => requestAnimationFrame(() => resolve()));
+
+  const started = performance.now();
+  onProgress?.({ stage: 'preprocessing', width, height });
   const canvas = document.createElement('canvas');
   canvas.width = 1024;
   canvas.height = 1024;
   const scale = 1024 / Math.max(width, height);
-  const resizedWidth = Math.round(width * scale);
-  const resizedHeight = Math.round(height * scale);
+  const resizedWidth = Math.max(1, Math.round(width * scale));
+  const resizedHeight = Math.max(1, Math.round(height * scale));
   const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  if (!ctx) throw new Error('Could not create the SAM 2 preprocessing canvas.');
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
   ctx.drawImage(image, 0, 0, resizedWidth, resizedHeight);
   const pixels = ctx.getImageData(0, 0, 1024, 1024).data;
-  const means = [0.485, 0.456, 0.406];
-  const stds = [0.229, 0.224, 0.225];
   const plane = 1024 * 1024;
   const tensorData = new Float32Array(3 * plane);
-  for (let i = 0; i < plane; i++) {
-    for (let c = 0; c < 3; c++) tensorData[c * plane + i] = (pixels[i * 4 + c] / 255 - means[c]) / stds[c];
+  // Single pixel pass avoids the previous nested channel loop.
+  for (let i = 0, p = 0; i < plane; i++, p += 4) {
+    tensorData[i] = (pixels[p] / 255 - 0.485) / 0.229;
+    tensorData[plane + i] = (pixels[p + 1] / 255 - 0.456) / 0.224;
+    tensorData[2 * plane + i] = (pixels[p + 2] / 255 - 0.406) / 0.225;
   }
-  onProgress?.({ stage: 'encoder-running' });
-  const startedAt = performance.now();
+  onProgress?.({ stage: 'encoding', width, height });
+  const inferenceStarted = performance.now();
   const result = await encoderSession.run({
     image: new ort.Tensor('float32', tensorData, [1, 3, 1024, 1024])
   });
@@ -109,10 +116,18 @@ export async function encodeSamImage(image, onProgress) {
     high_res_feats_0: result.high_res_feats_0,
     high_res_feats_1: result.high_res_feats_1
   };
-  encodedImageKey = imageKey;
-  const timeMs = Math.round(performance.now() - startedAt);
-  onProgress?.({ stage: 'encoded', timeMs });
-  return { width, height, timeMs, cached: false };
+  encodedImageElement = image;
+  encodedImageSize = sizeKey;
+  encodedImageKey = sizeKey;
+  onProgress?.({
+    stage: 'encoded',
+    width,
+    height,
+    preprocessingMs: Math.round(inferenceStarted - started),
+    inferenceMs: Math.round(performance.now() - inferenceStarted),
+    totalMs: Math.round(performance.now() - started)
+  });
+  return { width, height, cached: false };
 }
 
 export async function promptSam(points, image) {
@@ -177,5 +192,7 @@ export function releaseSam2() {
   encoderSession = decoderSession = undefined;
   embedding = undefined;
   encodedImageKey = '';
+  encodedImageElement = null;
+  encodedImageSize = '';
   return Promise.all([a, b].filter(Boolean));
 }
