@@ -11,10 +11,10 @@ export async function loadSubjectModel(onProgress=()=>{}){
   env.allowRemoteModels=true;
   env.useBrowserCache=true;
   if(!segmenterPromise) {
-    segmenterPromise=pipeline('image-segmentation',MODEL,{
+    segmenterPromise=pipeline('background-removal',MODEL,{
       progress_callback:onProgress,
       device:'wasm',
-      dtype:'q8'
+      dtype:'fp32'
     }).catch(error=>{segmenterPromise=null;throw error;});
   }
   return segmenterPromise;
