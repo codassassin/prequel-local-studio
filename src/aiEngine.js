@@ -1,6 +1,6 @@
 import { env, pipeline } from '@huggingface/transformers';
 
-const MODEL = 'briaai/RMBG-1.4';
+const MODEL = 'Xenova/modnet';
 let segmenterPromise;
 export function modelInfo(){return {id:MODEL,cache:'browser-cache'};}
 export async function loadSubjectModel(onProgress=()=>{}){
@@ -13,17 +13,28 @@ export async function loadSubjectModel(onProgress=()=>{}){
   if(!segmenterPromise) {
     segmenterPromise=pipeline('image-segmentation',MODEL,{
       progress_callback:onProgress,
-      device:'wasm'
+      device:'wasm',
+      dtype:'q8'
     }).catch(error=>{segmenterPromise=null;throw error;});
   }
   return segmenterPromise;
 }
 export async function segmentSubject(image,onProgress){
-  const model=await loadSubjectModel(onProgress); const result=await model(image); const segments=Array.isArray(result)?result:[];
-  if(!segments.length) throw new Error('The model did not return a foreground mask.');
-  const output=segments.find(item=>item.label==='foreground')||segments[0],raw=output.mask||output;
-  if(!raw?.data||!raw.width||!raw.height) throw new Error('The segmentation model returned an unsupported mask.');
-  return {data:new Uint8ClampedArray(raw.data),width:raw.width,height:raw.height,channels:raw.channels||1,label:output.label||'foreground'};
+  const model=await loadSubjectModel(onProgress);
+  const result=await model(image);
+  const output=Array.isArray(result)?result[0]:null;
+  // Xenova/modnet's background-removal pipeline returns an RGBA foreground
+  // image. Its alpha channel is the real ML-generated soft subject matte.
+  if(!output?.data||!output.width||!output.height||output.channels!==4){
+    throw new Error('MODNet returned an unexpected output. Expected an RGBA foreground matte.');
+  }
+  return {
+    data:new Uint8ClampedArray(output.data),
+    width:output.width,
+    height:output.height,
+    channels:4,
+    label:'foreground'
+  };
 }
 export function analysePhoto(image,mask){
   const iw=image.naturalWidth||image.width,ih=image.naturalHeight||image.height,canvas=document.createElement('canvas'),max=320,scale=Math.min(1,max/Math.max(iw,ih));
