@@ -10,7 +10,7 @@ function LookThumbnail({image,preset,index}){
   const base=document.createElement('canvas');base.width=w;base.height=h;const b=base.getContext('2d');
   const scale=Math.max(w/image.naturalWidth,h/image.naturalHeight),sw=image.naturalWidth*scale,sh=image.naturalHeight*scale;
   b.drawImage(image,(w-sw)/2,(h-sh)/2,sw,sh);
-  try{const result=renderImage(base,w,h,preset.values||defaults,31+index);ctx.clearRect(0,0,w,h);ctx.drawImage(result,0,0);}catch(e){ctx.drawImage(base,0,0);}
+  try{const result=renderImage(base,w,h,{...defaults,...(preset.values||{})},31+index);ctx.clearRect(0,0,w,h);ctx.drawImage(result,0,0);}catch(e){ctx.drawImage(base,0,0);}
  },[image,preset,index]);
  return <canvas ref={ref} className="look-thumb" aria-label={image ? preset.name+' preview' : 'Upload a photo to preview this look'}/>;
 }
