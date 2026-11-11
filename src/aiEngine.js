@@ -1,4 +1,4 @@
-import { env, pipeline } from '@huggingface/transformers';
+import { env, pipeline, RawImage } from '@huggingface/transformers';
 
 const MODEL = 'Xenova/modnet';
 let segmenterPromise;
@@ -21,10 +21,21 @@ export async function loadSubjectModel(onProgress=()=>{}){
 }
 export async function segmentSubject(image,onProgress){
   const model=await loadSubjectModel(onProgress);
-  const result=await model(image);
-  const output=Array.isArray(result)?result[0]:null;
-  // Xenova/modnet's background-removal pipeline returns an RGBA foreground
-  // image. Its alpha channel is the real ML-generated soft subject matte.
+  // Transformers.js accepts RawImage, Blob, URL, string or canvas inputs;
+  // HTMLImageElement is not a supported pipeline input. Convert locally.
+  const iw=image.naturalWidth||image.width;
+  const ih=image.naturalHeight||image.height;
+  if(!iw||!ih) throw new Error('The selected photo has not finished loading.');
+  const max=1024,scale=Math.min(1,max/Math.max(iw,ih));
+  const canvas=document.createElement('canvas');
+  canvas.width=Math.max(1,Math.round(iw*scale));
+  canvas.height=Math.max(1,Math.round(ih*scale));
+  const ctx=canvas.getContext('2d',{willReadFrequently:true});
+  ctx.drawImage(image,0,0,canvas.width,canvas.height);
+  const input=RawImage.fromCanvas(canvas);
+  const result=await model(input);
+  const output=Array.isArray(result)?result[0]:result;
+  // BackgroundRemovalPipeline returns one RGBA RawImage, not an array.
   if(!output?.data||!output.width||!output.height||output.channels!==4){
     throw new Error('MODNet returned an unexpected output. Expected an RGBA foreground matte.');
   }
