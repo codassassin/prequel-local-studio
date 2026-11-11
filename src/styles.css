@@ -272,3 +272,9 @@ body{overflow:hidden}
 .explore-footer{height:32px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-top:1px solid #34332d;color:#858174;font:8px ui-monospace,monospace;letter-spacing:.4px}
 .explore-footer span{display:flex;align-items:center;gap:7px}
 @media(max-width:700px){.explore-topbar{gap:10px;padding:0 11px}.explore-brand{font-size:15px}.explore-brand i{display:none}.explore-topbar>input{max-width:none}.explore-save>span{display:none}.explore-toolbar{height:auto;min-height:54px;padding:8px;gap:6px}.explore-tools{flex-wrap:wrap}.explore-tools button{padding:7px;font-size:9px}.explore-node-image{height:125px}.explore-node{width:210px!important}.explore-footer{font-size:7px}.explore-footer span:first-child{max-width:70%;line-height:1.4}}
+
+/* Exploration canvas performance: keep the edge surface tiny and promote moving layers */
+.explore-edges{width:1px;height:1px;overflow:visible}
+.explore-world{will-change:transform;contain:layout style}
+.explore-node{will-change:transform;backface-visibility:hidden}
+.explore-node-image img{transform:translateZ(0);backface-visibility:hidden}
