@@ -1,4 +1,6 @@
 import * as ort from 'onnxruntime-web/webgpu';
+import ortWasmMjsUrl from './ort-runtime/ort-wasm-simd-threaded.asyncify.mjs?url';
+import ortWasmBinaryUrl from './ort-runtime/ort-wasm-simd-threaded.asyncify.wasm?url';
 
 const MODEL = 'SharpAI/sam2-hiera-tiny-onnx';
 const BASE = `https://huggingface.co/${MODEL}/resolve/main`;
@@ -54,9 +56,9 @@ export async function loadSam2(onProgress) {
   if (encoderSession && decoderSession) return;
   if (!samSupport().webgpu) throw new Error('SAM 2 Tiny currently requires WebGPU. Try a recent Chrome/Edge browser with WebGPU enabled.');
   ort.env.logLevel = 'warning';
-  // Let Vite bundle the exact runtime assets locally. This avoids both the
-  // SPA fallback returning index.html and cross-origin dynamic-import failures.
-  ort.env.wasm.wasmPaths = '/ort-runtime/';
+  // Vite emits these source assets with hashed URLs; ONNX Runtime can then
+  // fetch/import the matching local files without public-dir import warnings.
+  ort.env.wasm.wasmPaths = { mjs: ortWasmMjsUrl, wasm: ortWasmBinaryUrl };
   ort.env.wasm.numThreads = 1;
   const encoderBuffer = await cachedModelFile('encoder.with_runtime_opt.ort', onProgress);
   const decoderBuffer = await cachedModelFile('decoder.onnx', onProgress);
