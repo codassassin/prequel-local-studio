@@ -14,7 +14,7 @@ function transformSource(image,t){
  const crop=document.createElement('canvas');crop.width=Math.round(sw);crop.height=Math.round(sh);crop.getContext('2d').drawImage(rotated,sx,sy,sw,sh,0,0,crop.width,crop.height);return crop;
 }
 function compositeSubject(base,mask,mode='original',colour='#202020',backgroundImage=null,maskSettings={},creative={}) {
- if(!mask || mode==='original'&&!backgroundImage) return base;
+ if(!mask) return base;
  const w=base.width,h=base.height,out=document.createElement('canvas');out.width=w;out.height=h;const ctx=out.getContext('2d');
  const backdrop=document.createElement('canvas');backdrop.width=w;backdrop.height=h;const b=backdrop.getContext('2d');
  if(backgroundImage){b.drawImage(backgroundImage,0,0,w,h);}
