@@ -297,3 +297,17 @@ body{overflow:hidden}
 .explore-direction-note strong{font:15px Georgia,serif;color:#e5d7b8}
 .explore-direction-note span{font-size:10px;line-height:1.5;color:#a9a292}
 .explore-direction-note button{align-self:flex-start;background:transparent;border:0;padding:5px 0;color:#d3bd8b;font-size:10px}
+
+/* Local creative collaborator */
+.explore-collab{position:absolute;z-index:6;top:18px;right:18px;width:min(390px,calc(100% - 36px));max-height:calc(100% - 36px);overflow:auto;background:#201f1a;border:1px solid #8c7950;box-shadow:0 18px 55px #000c;padding:18px;color:#e9e1d2}
+.explore-collab .explore-discover-heading h2{font:22px Georgia,serif;font-weight:400;margin:7px 0 0}
+.explore-collab>p{font-size:11px;line-height:1.6;color:#aaa393;margin:13px 0}
+.explore-collab>p strong{color:#e4d7ba;font-weight:500}
+.explore-collab-status{padding:12px;background:#29271f;border:1px solid #494333;color:#c8b88f;font-size:10px}
+.explore-collab-error{padding:12px;background:#30221e;border:1px solid #765044;color:#e0b5a5;font-size:10px}
+.explore-collab-error button,.explore-collab-refresh{display:block;margin-top:9px;background:transparent;border:1px solid #62563b;padding:7px 10px;color:#d8c397;font-size:10px}
+.explore-collab-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:13px 0}
+.explore-collab-metrics span{display:flex;flex-direction:column;gap:4px;background:#29271f;padding:9px;color:#9d9788;font:8px ui-monospace,monospace}
+.explore-collab-metrics b{color:#e2d1aa;font-size:13px;font-weight:500}
+.explore-collab h3{font:13px Georgia,serif;font-weight:400;color:#e6d8bc;margin:15px 0 8px}
+.explore-collab ul{padding-left:17px;margin:0;color:#aaa393;font-size:10px;line-height:1.7}
