@@ -28,7 +28,7 @@ npm run preview
 ```
 
 ## Privacy
-Photos are opened as local browser object URLs and processed with Canvas in your browser. The app does not upload images or make API calls.
+Photos are opened as local browser object URLs. Editing, segmentation inference and analysis run in the browser; image pixels are not sent to a server. The first AI run downloads model files from Hugging Face and stores them in browser Cache Storage for later use. Network access is therefore needed for the first model download unless local model files are installed.
 
 ## Notes
-Built with Canvas 2D. Crop ratios use centered crops. Freeform crop handles, layers, masks, RAW development and AI object removal are not included. Presets are original looks, not exact film-stock emulations.
+Built with Canvas 2D and Transformers.js. The initial AI model is `briaai/RMBG-1.4`; it produces a foreground alpha mask for the main subject, not editable multi-object instance masks. BRIA RMBG-1.4 is licensed for non-commercial use; commercial use requires a separate BRIA license. Check the model card before distributing or using it commercially. The model loader supports local model files at `/models` with a remote cached fallback. Presets are original looks, not exact film-stock emulations.
