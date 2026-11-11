@@ -3,6 +3,7 @@ import{Aperture,ArrowDownToLine,ArrowLeftRight,Check,ImagePlus,RotateCcw,RotateC
 import{controls,defaults,presets,groups}from'./presets';import{renderImage}from'./imageEngine';import ProStudio from './ProStudio.jsx';import AIStudio from './AIStudio.jsx';
 const ratios=[['Free','free'],['Original','original'],['1:1','1:1'],['4:5','4:5'],['5:4','5:4'],['3:2','3:2'],['2:3','2:3'],['16:9','16:9'],['9:16','9:16']];
 function transformSource(image,t){
+ if(!t.rotation&&!t.flip&&(t.ratio==='free'||t.ratio==='original'))return image;
  const rotated=document.createElement('canvas'),swap=Math.abs(t.rotation)%180===90;
  rotated.width=swap?image.height:image.width;rotated.height=swap?image.width:image.height;
  const r=rotated.getContext('2d');r.translate(rotated.width/2,rotated.height/2);r.rotate(t.rotation*Math.PI/180);r.scale(t.flip?-1:1,1);r.drawImage(image,-image.width/2,-image.height/2);
@@ -12,16 +13,15 @@ function transformSource(image,t){
  if(source>target){sw=sh*target;sx=(rotated.width-sw)/2;}else{sh=sw/target;sy=(rotated.height-sh)/2;}
  const crop=document.createElement('canvas');crop.width=Math.round(sw);crop.height=Math.round(sh);crop.getContext('2d').drawImage(rotated,sx,sy,sw,sh,0,0,crop.width,crop.height);return crop;
 }
+const alphaMaskCache=new WeakMap();
 function compositeSubject(base,mask,mode='original',colour='#202020',backgroundImage=null){
- if(!mask)return base;
+ if(!mask|| (mode==='original'&&!backgroundImage))return base;
  const w=base.width,h=base.height,out=document.createElement('canvas');out.width=w;out.height=h;const ctx=out.getContext('2d');
  if(mode==='solid'){ctx.fillStyle=colour;ctx.fillRect(0,0,w,h);}
  else if(backgroundImage){ctx.drawImage(backgroundImage,0,0,w,h);}
  else {ctx.drawImage(base,0,0,w,h);if(mode==='blur'){ctx.save();ctx.filter='blur(22px)';ctx.drawImage(base,0,0,w,h);ctx.restore();}}
  const subject=document.createElement('canvas');subject.width=w;subject.height=h;const sx=subject.getContext('2d');sx.drawImage(base,0,0,w,h);
- const alpha=document.createElement('canvas');alpha.width=mask.width;alpha.height=mask.height;const ax=alpha.getContext('2d');const pixels=ax.createImageData(mask.width,mask.height);
- for(let i=0;i<mask.width*mask.height;i++){const src=i*mask.channels,dst=i*4,a=mask.channels===4?mask.data[src+3]:mask.data[src];pixels.data[dst]=pixels.data[dst+1]=pixels.data[dst+2]=255;pixels.data[dst+3]=a;}
- ax.putImageData(pixels,0,0);sx.globalCompositeOperation='destination-in';sx.drawImage(alpha,0,0,w,h);ctx.drawImage(subject,0,0);return out;
+ let alpha=alphaMaskCache.get(mask);if(!alpha){alpha=document.createElement('canvas');alpha.width=mask.width;alpha.height=mask.height;const ax=alpha.getContext('2d');const pixels=ax.createImageData(mask.width,mask.height);for(let i=0;i<mask.width*mask.height;i++){const src=i*mask.channels,dst=i*4,a=mask.channels===4?mask.data[src+3]:mask.data[src];pixels.data[dst]=pixels.data[dst+1]=pixels.data[dst+2]=255;pixels.data[dst+3]=a;}ax.putImageData(pixels,0,0);alphaMaskCache.set(mask,alpha);}sx.globalCompositeOperation='destination-in';sx.drawImage(alpha,0,0,w,h);ctx.drawImage(subject,0,0);return out;
 }
 function LookThumbnail({image,preset,index}){const ref=useRef(null);useEffect(()=>{const target=ref.current;if(!target)return;const w=240,h=148;target.width=w;target.height=h;const ctx=target.getContext('2d');if(!image){const g=ctx.createLinearGradient(0,0,w,h);g.addColorStop(0,'#8b7258');g.addColorStop(.5,'#d9b68a');g.addColorStop(1,'#4c5143');ctx.fillStyle=g;ctx.fillRect(0,0,w,h);return;}const base=document.createElement('canvas');base.width=w;base.height=h;const b=base.getContext('2d');const scale=Math.max(w/image.naturalWidth,h/image.naturalHeight),sw=image.naturalWidth*scale,sh=image.naturalHeight*scale;b.drawImage(image,(w-sw)/2,(h-sh)/2,sw,sh);try{const result=renderImage(base,w,h,{...defaults,...(preset.values||{})},31+index);ctx.clearRect(0,0,w,h);ctx.drawImage(result,0,0);}catch(e){ctx.drawImage(base,0,0);}},[image,preset,index]);return <canvas ref={ref} className="look-thumb" aria-label={image?preset.name+' preview':'Upload a photo to preview this look'}/>;}
 export default function App(){
@@ -31,8 +31,8 @@ export default function App(){
  const undo=()=>{if(historyIndex.current===0)return;historyIndex.current--;const s=history.current[historyIndex.current];setV(s.v);setPreset(s.preset);setTransform(s.transform);setCompare(false);};
  const redo=()=>{if(historyIndex.current>=history.current.length-1)return;historyIndex.current++;const s=history.current[historyIndex.current];setV(s.v);setPreset(s.preset);setTransform(s.transform);setCompare(false);};
  const sourceFor=()=>imgRef.current?transformSource(imgRef.current,{...transform,ratio:transform.ratio==='original'?'free':transform.ratio}):null;
- const draw=useCallback(()=>{if(!canvas.current||!imgRef.current)return;const src=transformSource(imgRef.current,transform),s=Math.min(1,1800/Math.max(src.width,src.height)),w=Math.max(1,Math.round(src.width*s)),h=Math.max(1,Math.round(src.height*s));canvas.current.width=w;canvas.current.height=h;const rendered=renderImage(src,w,h,compare?defaults:v,17,compare?{}:design);const mask=compare?null:aiMask;const composed=compositeSubject(rendered,mask,bgMode,bgColour,bgImage);canvas.current.getContext('2d').drawImage(composed,0,0);},[v,compare,transform,design,aiMask,bgMode,bgColour,bgImage]);
- useEffect(()=>{draw();},[draw,photo]);useEffect(()=>()=>{if(urlRef.current)URL.revokeObjectURL(urlRef.current);if(bgUrlRef.current)URL.revokeObjectURL(bgUrlRef.current);},[]);useEffect(()=>{localStorage.setItem('stillroom-looks',JSON.stringify(saved));},[saved]);
+ const draw=useCallback(()=>{if(!canvas.current||!imgRef.current)return;const src=transformSource(imgRef.current,transform),s=Math.min(1,960/Math.max(src.width,src.height)),w=Math.max(1,Math.round(src.width*s)),h=Math.max(1,Math.round(src.height*s));canvas.current.width=w;canvas.current.height=h;const rendered=renderImage(src,w,h,compare?defaults:v,17,compare?{}:design);const mask=compare?null:aiMask;const composed=compositeSubject(rendered,mask,bgMode,bgColour,bgImage);canvas.current.getContext('2d').drawImage(composed,0,0);},[v,compare,transform,design,aiMask,bgMode,bgColour,bgImage]);
+ useEffect(()=>{if(!photo)return;const frame=requestAnimationFrame(draw);return()=>cancelAnimationFrame(frame);},[draw,photo]);useEffect(()=>()=>{if(urlRef.current)URL.revokeObjectURL(urlRef.current);if(bgUrlRef.current)URL.revokeObjectURL(bgUrlRef.current);},[]);useEffect(()=>{localStorage.setItem('stillroom-looks',JSON.stringify(saved));},[saved]);
  const load=f=>{if(!f||!f.type.startsWith('image/'))return;if(urlRef.current)URL.revokeObjectURL(urlRef.current);const u=URL.createObjectURL(f);urlRef.current=u;const im=new Image();im.onload=()=>{imgRef.current=im;setPhoto({width:im.naturalWidth,height:im.naturalHeight});setAiMask(null);setBgMode('original');setBgImage(null);setName(f.name);setV(defaults);setPreset('original');setTransform({rotation:0,flip:false,ratio:'free'});setZoom(1);history.current=[{v:defaults,preset:'original',transform:{rotation:0,flip:false,ratio:'free'}}];historyIndex.current=0;setNotice('');};im.onerror=()=>setNotice('Could not open this image. Try a JPG or PNG.');im.src=u;};
  const reset=()=>{pushHistory();setV(defaults);setPreset('original');setTransform({rotation:0,flip:false,ratio:'free'});};
  const apply=p=>{pushHistory();setV({...defaults,...p.values});setPreset(p.id);setCompare(false);};
