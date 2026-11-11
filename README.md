@@ -4,11 +4,11 @@ A personal, local-first photo editor inspired by creative filter apps. Independe
 
 ## Features
 - Import JPEG, PNG, WebP and AVIF photos
-- 12 original presets: warm, film, moody, retro, cool and monochrome
-- Exposure, brightness, contrast, saturation, warmth, tint, fade, vignette, grain, soft focus, color split and scanline controls
+- 24 original looks across film, warm, cinematic, portrait, moody, retro, creative, cool and monochrome styles
+- 20 controls including exposure, tone, teal shadows, matte blacks, halation, bloom, glow, light leaks, dust, scratches, chromatic aberration and scanlines
 - Before/after comparison
 - Full-resolution PNG or high-quality JPEG export
-- Responsive dark editing workspace
+- Searchable, scrollable preset library with labelled look cards and category filters\n- Responsive dark editing workspace
 - Local-only processing: no accounts, uploads, backend, analytics or cloud services
 
 ## Run locally
