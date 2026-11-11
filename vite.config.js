@@ -11,7 +11,8 @@ const ortAssets=[
   'ort-wasm-simd-threaded.asyncify.wasm'
 ];
 function copyOrtRuntimeAssets(){
-  const target=join(process.cwd(),'public','ort-runtime');
+  // Keep these in src so Vite can process the ?url imports in samEngine.js.
+  const target=join(process.cwd(),'src','ort-runtime');
   mkdirSync(target,{recursive:true});
   for(const file of ortAssets)copyFileSync(join(ortDist,file),join(target,file));
 }
