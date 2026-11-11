@@ -20,7 +20,7 @@ export async function loadSubjectModel(onProgress=()=>{}){
       const url=typeof input==='string'?input:input?.url||response.url||'unknown URL';
       const type=response.headers.get('content-type')||'';
       if(type.includes('text/html')){
-        const snippet=(await response.clone().text()).slice(0,180).replace(/\\s+/g,' ');
+        const snippet=(await response.clone().text()).slice(0,180).replace(/\s+/g,' ');
         throw new Error(`[Stillroom model fetch] HTML response: ${url} (HTTP ${response.status}, content-type ${type}). Body: ${snippet}`);
       }
       return response;
