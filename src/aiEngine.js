@@ -5,7 +5,7 @@ let segmenterPromise;
 export function modelInfo(){return {id:MODEL,cache:'browser-cache'};}
 export async function loadSubjectModel(onProgress=()=>{}){
   env.allowRemoteModels=true; env.useBrowserCache=true; env.cacheKey='stillroom-ai-models-v1';
-  if(!segmenterPromise) segmenterPromise=pipeline('background-removal',MODEL,{progress_callback:onProgress,device:'auto'}).catch(error=>{segmenterPromise=null;throw error;});
+  if(!segmenterPromise) segmenterPromise=pipeline('background-removal',MODEL,{progress_callback:onProgress,device:typeof navigator!=='undefined'&&navigator.gpu?'webgpu':'wasm'}).catch(error=>{segmenterPromise=null;throw error;});
   return segmenterPromise;
 }
 export async function segmentSubject(image,onProgress){
@@ -14,8 +14,8 @@ export async function segmentSubject(image,onProgress){
   return {data:new Uint8ClampedArray(output.data),width:output.width,height:output.height,channels:output.channels||4};
 }
 export function analysePhoto(image,mask){
-  const canvas=document.createElement('canvas'),max=320,scale=Math.min(1,max/Math.max(image.naturalWidth,image.naturalHeight));
-  canvas.width=Math.max(1,Math.round(image.naturalWidth*scale));canvas.height=Math.max(1,Math.round(image.naturalHeight*scale));
+  const iw=image.naturalWidth||image.width,ih=image.naturalHeight||image.height,canvas=document.createElement('canvas'),max=320,scale=Math.min(1,max/Math.max(iw,ih));
+  canvas.width=Math.max(1,Math.round(iw*scale));canvas.height=Math.max(1,Math.round(ih*scale));
   const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.drawImage(image,0,0,canvas.width,canvas.height);
   const {data}=ctx.getImageData(0,0,canvas.width,canvas.height);let lum=0,lum2=0,sat=0,n=0,under=0,over=0;
   for(let i=0;i<data.length;i+=16){const r=data[i],g=data[i+1],b=data[i+2],l=.2126*r+.7152*g+.0722*b,mx=Math.max(r,g,b),mn=Math.min(r,g,b);lum+=l;lum2+=l*l;sat+=(mx-mn)/(mx||1);n++;if(l<28)under++;if(l>235)over++;}
