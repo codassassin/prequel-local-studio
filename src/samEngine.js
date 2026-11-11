@@ -141,7 +141,6 @@ export async function promptSam(points, image) {
     coords.push(point.x * scale, point.y * scale);
     labels.push(point.label);
   }
-  // The exported decoder expects at least two point slots; -1 marks padding.
   while (labels.length < 2) { coords.push(0, 0); labels.push(-1); }
   const pointTensor = new ort.Tensor('float32', new Float32Array(coords), [1, labels.length, 2]);
   const labelTensor = new ort.Tensor('float32', new Float32Array(labels), [1, labels.length]);
@@ -158,32 +157,44 @@ export async function promptSam(points, image) {
   const maskCount = dims[1] || 3;
   const maskHeight = dims[dims.length - 2];
   const maskWidth = dims[dims.length - 1];
-  let best = 0;
-  for (let i = 1; i < maskCount; i++) if (scores[i] > scores[best]) best = i;
   const logits = maskTensor.data;
-  const offset = best * maskWidth * maskHeight;
   const small = document.createElement('canvas');
   small.width = maskWidth;
   small.height = maskHeight;
   const smallCtx = small.getContext('2d');
-  const imageData = smallCtx.createImageData(maskWidth, maskHeight);
-  for (let i = 0; i < maskWidth * maskHeight; i++) {
-    const alpha = logits[offset + i] > 0 ? 255 : 0;
-    const p = i * 4;
-    imageData.data[p] = imageData.data[p + 1] = imageData.data[p + 2] = 255;
-    imageData.data[p + 3] = alpha;
-  }
-  smallCtx.putImageData(imageData, 0, 0);
   const output = document.createElement('canvas');
   output.width = width;
   output.height = height;
   const outCtx = output.getContext('2d');
   outCtx.imageSmoothingEnabled = true;
-  outCtx.drawImage(small, 0, 0, width, height);
-  const rgba = outCtx.getImageData(0, 0, width, height).data;
-  const alpha = new Uint8ClampedArray(width * height);
-  for (let i = 0; i < alpha.length; i++) alpha[i] = rgba[i * 4 + 3];
-  return { data: alpha, width, height, channels: 1, label: 'SAM 2 prompt mask', score: Number(scores[best] || 0) };
+  const candidates = [];
+  for (let candidate = 0; candidate < maskCount; candidate++) {
+    const imageData = smallCtx.createImageData(maskWidth, maskHeight);
+    const offset = candidate * maskWidth * maskHeight;
+    for (let i = 0; i < maskWidth * maskHeight; i++) {
+      const p = i * 4;
+      imageData.data[p] = imageData.data[p + 1] = imageData.data[p + 2] = 255;
+      imageData.data[p + 3] = logits[offset + i] > 0 ? 255 : 0;
+    }
+    smallCtx.putImageData(imageData, 0, 0);
+    outCtx.clearRect(0, 0, width, height);
+    outCtx.drawImage(small, 0, 0, width, height);
+    const rgba = outCtx.getImageData(0, 0, width, height).data;
+    const alpha = new Uint8ClampedArray(width * height);
+    for (let i = 0; i < alpha.length; i++) alpha[i] = rgba[i * 4 + 3];
+    candidates.push({
+      data: alpha,
+      width,
+      height,
+      channels: 1,
+      label: `SAM 2 candidate ${candidate + 1}`,
+      score: Number(scores[candidate] || 0),
+      candidateIndex: candidate
+    });
+  }
+  let selectedIndex = 0;
+  for (let i = 1; i < candidates.length; i++) if (candidates[i].score > candidates[selectedIndex].score) selectedIndex = i;
+  return { candidates, selectedIndex };
 }
 
 export function releaseSam2() {
