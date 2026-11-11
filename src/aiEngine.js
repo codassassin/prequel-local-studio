@@ -4,8 +4,20 @@ const MODEL = 'briaai/RMBG-1.4';
 let segmenterPromise;
 export function modelInfo(){return {id:MODEL,cache:'browser-cache'};}
 export async function loadSubjectModel(onProgress=()=>{}){
-  env.allowRemoteModels=true; env.allowLocalModels=true; env.localModelPath='/models/'; env.useBrowserCache=true; env.cacheKey='stillroom-ai-models-v1';
-  if(!segmenterPromise) segmenterPromise=pipeline('image-segmentation',MODEL,{progress_callback:onProgress,device:typeof navigator!=='undefined'&&navigator.gpu?'webgpu':'wasm'}).catch(error=>{segmenterPromise=null;throw error;});
+  env.allowRemoteModels=true;
+  env.localModelPath='/models/';
+  env.useBrowserCache=true;
+  // Only enable local model lookup when a real local config exists. Vite's SPA
+  // fallback otherwise returns index.html with status 200, which Transformers
+  // then tries to parse as JSON ("Unexpected token '<'").
+  let hasLocalModel=false;
+  try {
+    const response=await fetch('/models/briaai/RMBG-1.4/config.json',{method:'GET',cache:'no-store'});
+    const type=response.headers.get('content-type')||'';
+    hasLocalModel=response.ok && type.includes('application/json');
+  } catch {}
+  env.allowLocalModels=hasLocalModel;
+  if(!segmenterPromise) segmenterPromise=pipeline('image-segmentation',MODEL,{progress_callback:onProgress,device:'wasm'}).catch(error=>{segmenterPromise=null;throw error;});
   return segmenterPromise;
 }
 export async function segmentSubject(image,onProgress){
