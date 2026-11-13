@@ -374,3 +374,10 @@ body{overflow:hidden}
 .explore-compare-stage{cursor:ew-resize;user-select:none}
 .explore-compare-stage img{pointer-events:none;user-select:none}
 .explore-compare-slider{display:none!important}
+
+/* Fix: the legacy divider rule set pointer-events:none, which blocked dragging */
+.explore-compare-divider{pointer-events:auto!important;z-index:8;display:block;box-sizing:border-box;touch-action:none;cursor:ew-resize}
+.explore-compare-divider:before{pointer-events:none}
+.explore-compare-divider span{pointer-events:none;z-index:2}
+.explore-compare-stage{position:relative;isolation:isolate;overflow:hidden;touch-action:pan-y}
+.explore-compare-overlay{pointer-events:none}
