@@ -32,7 +32,7 @@ The project is an independent product. It does not use PREQUEL branding, assets,
 - Duplicate experiments, discover creative directions, compare sibling variations, and browse the variation gallery.
 - Shortlist experiments, create tonal constellations, and inspect a Creative DNA summary derived from saved experiment settings.
 - Visual Idea Fusion transfers a saved tonal recipe to another photograph.
-- **Colour DNA** extracts up to six representative colours from a small local preview, balanced across shadows, midtones and highlights.
+- **Colour DNA** extracts up to six representative colours from a small local preview, balanced across shadows, midtones and highlights; swatches can be manually edited and saved with the experiment.
 - **Palette Transfer** maps donor shadow colours to target shadows, midtone colours to target midtones, and highlight colours to target highlights on a working copy, with adjustable influence and optional heuristic skin-tone protection.
 - Palette extraction and palette transfer are deterministic colour-analysis/remapping operations, not generative AI or full artistic style transfer.
 
