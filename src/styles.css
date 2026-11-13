@@ -387,3 +387,18 @@ body{overflow:hidden}
 .explore-compare-switcher button{padding:7px 10px;background:#29271f;border:1px solid #65583c;color:#e3d3ad;font-size:10px;cursor:pointer}
 .explore-compare-switcher button:disabled{opacity:.35;cursor:not-allowed}
 .explore-compare-switcher span{min-width:42px;text-align:center;color:#b7a477;font:9px ui-monospace,monospace}
+
+/* Local creative variation gallery */
+.explore-variation-gallery{position:absolute;z-index:12;top:88px;right:18px;bottom:54px;width:min(440px,calc(100vw - 36px));display:flex;flex-direction:column;gap:14px;padding:18px;background:#201f1af7;border:1px solid #8c7950;box-shadow:0 18px 55px #000a;color:#e9e1d2;overflow:hidden}
+.explore-variation-gallery .explore-discover-heading p{margin:5px 0 0;color:#aaa393;font-size:10px}
+.explore-variation-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;overflow:auto;padding:2px}
+.explore-variation-card{min-width:0;display:flex;flex-direction:column;gap:7px;padding:8px;text-align:left;background:#26241e;border:1px solid #4d4637;color:#e9e1d2;cursor:pointer}
+.explore-variation-card:hover,.explore-variation-card.active{border-color:#c9b582;background:#302d24}
+.explore-variation-thumb{position:relative;width:100%;aspect-ratio:4/3;background:#14130f;overflow:hidden}
+.explore-variation-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.explore-variation-thumb>span{position:absolute;top:6px;left:6px;padding:3px 5px;background:#171611d9;color:#e5d7b8;font:8px ui-monospace,monospace}
+.explore-variation-card strong{font:14px Georgia,serif;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.explore-variation-card small{font-size:9px;line-height:1.4;color:#a9a292;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:25px}
+.explore-variation-open{margin-top:auto;padding:7px 8px;background:#d0bd8f;color:#171611;text-align:center;font-size:9px;font-weight:700}
+.explore-count{display:inline-grid;place-items:center;min-width:17px;height:17px;padding:0 4px;border-radius:10px;background:#d0bd8f;color:#171611;font:9px ui-monospace,monospace}
+@media(max-width:600px){.explore-variation-gallery{top:72px;right:8px;bottom:48px;width:calc(100vw - 16px);padding:12px}.explore-variation-grid{gap:8px}}
