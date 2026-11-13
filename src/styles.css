@@ -446,3 +446,13 @@ body{overflow:hidden}
 
 /* Visual Idea Fusion uses the same calm modal language as Constellations */
 .explore-fusion-recipe-note{font-size:10px;line-height:1.6;color:#aaa393}
+
+
+/* Local Colour DNA palette */
+.explore-palette-panel{gap:14px}
+.explore-palette-swatches{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.explore-palette-swatch{min-width:0;padding:8px;background:#29271f;border:1px solid #514a3c;display:grid;grid-template-columns:1fr auto;gap:5px 8px;align-items:center}
+.explore-palette-swatch>div{grid-column:1/-1;height:54px;border:1px solid #ffffff22}
+.explore-palette-swatch strong{font:12px ui-monospace,monospace;color:#e5d7b8}
+.explore-palette-swatch small{grid-column:1/-1;font-size:9px;color:#aaa393}
+.explore-palette-swatch button{grid-column:2;grid-row:2;padding:4px 7px;background:transparent;border:1px solid #625944;color:#d9c9a5;font-size:9px;cursor:pointer}
