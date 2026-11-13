@@ -472,3 +472,11 @@ body{overflow:hidden}
 .explore-palette-pickers label{min-width:0;font-size:10px;line-height:1.45}
 .explore-palette-pickers select{box-sizing:border-box;width:100%;height:46px;padding:10px 34px 10px 12px;font-size:13px;line-height:1.3;overflow:hidden;text-overflow:ellipsis}
 @media(max-width:520px){.explore-palette-pickers{grid-template-columns:minmax(0,1fr);gap:12px}}
+
+
+/* Optional heuristic skin-tone protection control */
+.explore-palette-skin-toggle{display:flex;align-items:flex-start;gap:10px;padding:11px 12px;background:#29271f;border:1px solid #514a3c;color:#d8cfbd;cursor:pointer}
+.explore-palette-skin-toggle input{width:15px;height:15px;margin:2px 0 0;accent-color:#c5ad7d;flex:0 0 auto}
+.explore-palette-skin-toggle span{display:flex;flex-direction:column;gap:4px}
+.explore-palette-skin-toggle strong{font-size:11px;font-weight:500;color:#e5d7b8}
+.explore-palette-skin-toggle small{font-size:9px;line-height:1.5;color:#aaa393}
