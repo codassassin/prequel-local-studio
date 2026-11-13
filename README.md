@@ -1,34 +1,81 @@
 # Stillroom — Local Photo Studio
 
-A personal, local-first photo editor inspired by creative filter apps. Independent project; no PREQUEL branding, assets, or proprietary filters.
+Stillroom is a local-first creative photo workspace for editing personal photographs and exploring visual directions without sending image pixels to a cloud service.
+
+The project is an independent product. It does not use PREQUEL branding, assets, or proprietary filters.
+
+## Product principles
+
+- **Local-first:** photographs are processed in the browser; there is no application photo-upload backend.
+- **Non-destructive exploration:** experiment with copies and connected variations while preserving source photographs.
+- **Creative collaboration:** discover directions, compare variations, shortlist experiments, and combine ideas.
+- **Honest AI boundaries:** distinguish deterministic image analysis and colour algorithms from actual machine-learning features.
 
 ## Features
-- Import JPEG, PNG, WebP and AVIF photos
-- 24 original looks across film, warm, cinematic, portrait, moody, retro, creative, cool and monochrome styles
-- Colour grading controls including exposure, contrast, vibrance, hue shift, teal shadows and eight-channel HSL mixer\n- Five-zone tonal shaping, feathered radial exposure mask and editorial typography overlay
-- Before/after comparison
-- Full-resolution PNG or high-quality JPEG export
-- Searchable, scrollable preset library with labelled look cards and category filters\n- Responsive dark editing workspace
-- Local-only processing: no accounts, uploads, backend, analytics or cloud services
+
+### Photo editing
+- Import JPEG, PNG, WebP and AVIF photographs.
+- Original looks and creative presets across film, warm, cinematic, portrait, moody, retro, cool and monochrome styles.
+- Colour grading controls, including exposure, contrast, vibrance, hue shift, teal shadows and an eight-channel HSL mixer.
+- Five-zone tonal shaping, feathered radial exposure mask and editorial typography overlay.
+- Crop, rotate, flip and aspect-ratio controls.
+- Before/after comparison and full-resolution PNG or high-quality JPEG export.
+- Searchable preset library with category filters.
+
+### Pro Studio and AI Studio
+- Pro Studio provides additional editing and refinement controls.
+- AI Studio includes local subject/background workflows powered by a downloaded segmentation model.
+- The first segmentation model is BRIA RMBG-1.4. It creates a foreground alpha mask; it is not a general multi-object segmentation or semantic editing system.
+
+### Exploration workspace
+- Import multiple photographs onto a canvas, move and connect nodes, and create experiment branches.
+- Duplicate experiments, discover creative directions, compare sibling variations, and browse the variation gallery.
+- Shortlist experiments, create tonal constellations, and inspect a Creative DNA summary derived from saved experiment settings.
+- Visual Idea Fusion transfers a saved tonal recipe to another photograph.
+- **Colour DNA** extracts up to six representative colours from a small local preview, balanced across shadows, midtones and highlights.
+- **Palette Transfer** applies a donor palette to a target photograph on a working copy, with adjustable influence and optional heuristic skin-tone protection.
+- Palette extraction and palette transfer are deterministic colour-analysis/remapping operations, not generative AI or full artistic style transfer.
+
+## Requirements
+
+- Node.js 20.19+ or 22.12+
+- npm
+- A modern browser with Canvas 2D support
 
 ## Run locally
-Requirements: Node.js 20.19+ or 22.12+, npm.
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open http://127.0.0.1:5173.
+Vite prints the local development URL. The configured host is `127.0.0.1` (usually `http://127.0.0.1:5173`).
 
-## Build
+## Production build
+
 ```bash
 npm run build
 npm run preview
 ```
 
-## Privacy
-Photos are opened as local browser object URLs. Editing, segmentation inference and analysis run in the browser; image pixels are not sent to a server. The first AI run downloads model files from Hugging Face and stores them in browser Cache Storage for later use. Network access is therefore needed for the first model download unless local model files are installed.
+The production output is written to `dist/`.
 
-## Notes
-Built with Canvas 2D and Transformers.js. The initial AI model is `briaai/RMBG-1.4`; it produces a foreground alpha mask for the main subject, not editable multi-object instance masks. BRIA RMBG-1.4 is licensed for non-commercial use; commercial use requires a separate BRIA license. Check the model card before distributing or using it commercially. The model loader supports local model files at `/models` with a remote cached fallback. Presets are original looks, not exact film-stock emulations.
+## Local project data and privacy
+
+- Editing, palette extraction, palette remapping and image analysis run in the browser.
+- Exploration projects are stored in browser IndexedDB on the current device/browser profile.
+- The app does not provide cloud project synchronisation or an application backend.
+- AI model files may be downloaded from Hugging Face on the first AI run and cached in browser storage. Network access is therefore required for the initial model download unless local model files are installed.
+- Avoid clearing site data if you want to retain locally stored projects. Export important finished images separately.
+
+## Important model and licensing note
+
+The initial AI background-removal model is `briaai/RMBG-1.4`. Its model card states non-commercial licensing; commercial use requires a separate BRIA license. Review the current model card and license before distributing the model or using it commercially. The model loader supports local model files under `/models` with a remote cached fallback.
+
+## Documentation
+
+- [User Manual](docs/USER_MANUAL.md) — setup, editing, Exploration, Colour DNA, Palette Transfer, privacy and troubleshooting.
+
+## Current development status
+
+Features evolve on feature branches. Treat newly added functionality as experimental until it has been built and tested in a browser. The palette workflow is intentionally described as deterministic colour remapping, not semantic understanding or generative style transfer.
