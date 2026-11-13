@@ -402,3 +402,14 @@ body{overflow:hidden}
 .explore-variation-open{margin-top:auto;padding:7px 8px;background:#d0bd8f;color:#171611;text-align:center;font-size:9px;font-weight:700}
 .explore-count{display:inline-grid;place-items:center;min-width:17px;height:17px;padding:0 4px;border-radius:10px;background:#d0bd8f;color:#171611;font:9px ui-monospace,monospace}
 @media(max-width:600px){.explore-variation-gallery{top:72px;right:8px;bottom:48px;width:calc(100vw - 16px);padding:12px}.explore-variation-grid{gap:8px}}
+
+/* Variation shortlist controls */
+.explore-gallery-filters{display:flex;gap:7px;border-bottom:1px solid #4b4436;padding-bottom:10px}
+.explore-gallery-filters button{display:flex;align-items:center;gap:7px;padding:7px 10px;background:#29271f;border:1px solid #514936;color:#bdb5a4;font-size:10px;cursor:pointer}
+.explore-gallery-filters button.active{background:#d0bd8f;border-color:#d0bd8f;color:#171611}
+.explore-gallery-filters button span{font:9px ui-monospace,monospace}
+.explore-variation-card{padding:0;overflow:hidden}
+.explore-variation-select{display:flex;flex-direction:column;gap:7px;width:100%;padding:8px;text-align:left;background:transparent;border:0;color:inherit;cursor:pointer}
+.explore-variation-shortlist{display:flex;align-items:center;justify-content:center;gap:6px;width:calc(100% - 16px);margin:0 8px 8px;padding:7px;background:#29271f;border:1px solid #65583c;color:#c9b582;font-size:9px;cursor:pointer}
+.explore-variation-shortlist.saved{background:#d0bd8f;color:#171611;border-color:#d0bd8f}
+.explore-gallery-empty{padding:24px 12px;text-align:center;color:#aaa393;font:11px/1.6 Georgia,serif}
