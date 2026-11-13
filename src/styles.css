@@ -413,3 +413,17 @@ body{overflow:hidden}
 .explore-variation-shortlist{display:flex;align-items:center;justify-content:center;gap:6px;width:calc(100% - 16px);margin:0 8px 8px;padding:7px;background:#29271f;border:1px solid #65583c;color:#c9b582;font-size:9px;cursor:pointer}
 .explore-variation-shortlist.saved{background:#d0bd8f;color:#171611;border-color:#d0bd8f}
 .explore-gallery-empty{padding:24px 12px;text-align:center;color:#aaa393;font:11px/1.6 Georgia,serif}
+
+/* Creative constellation dialog */
+.explore-constellation-backdrop{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:18px;background:#090806c9;backdrop-filter:blur(5px)}
+.explore-constellation-panel{width:min(560px,100%);padding:24px;background:#211f19;border:1px solid #8c7950;box-shadow:0 22px 70px #000b;color:#e9e1d2}
+.explore-constellation-panel .explore-discover-heading p{max-width:420px;margin:7px 0 0;color:#aaa393;font-size:11px;line-height:1.5}
+.explore-constellation-pickers{display:grid;grid-template-columns:minmax(0,1fr) 28px minmax(0,1fr);gap:12px;align-items:end;margin:24px 0 16px}
+.explore-constellation-pickers label{display:flex;flex-direction:column;gap:8px;color:#c9b582;font:9px ui-monospace,monospace;text-transform:uppercase;letter-spacing:.08em}
+.explore-constellation-pickers select{width:100%;min-width:0;padding:11px 9px;background:#171611;border:1px solid #62563c;color:#e9e1d2;font:12px Georgia,serif;text-transform:none;letter-spacing:normal}
+.explore-constellation-plus{display:grid;place-items:center;height:38px;color:#c9b582;font:24px Georgia,serif}
+.explore-constellation-note{padding:12px;background:#29271f;border-left:2px solid #8c7950;color:#aaa393;font-size:10px;line-height:1.6}
+.explore-constellation-error{color:#e6a59b;font-size:11px}
+.explore-constellation-create{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;margin-top:16px;padding:12px;background:#d0bd8f;border:1px solid #d0bd8f;color:#171611;font-size:11px;font-weight:700;cursor:pointer}
+.explore-constellation-create:disabled{opacity:.45;cursor:not-allowed}
+@media(max-width:520px){.explore-constellation-panel{padding:16px}.explore-constellation-pickers{grid-template-columns:1fr;gap:10px}.explore-constellation-plus{height:12px}}
