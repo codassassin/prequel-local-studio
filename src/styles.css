@@ -480,3 +480,7 @@ body{overflow:hidden}
 .explore-palette-skin-toggle span{display:flex;flex-direction:column;gap:4px}
 .explore-palette-skin-toggle strong{font-size:11px;font-weight:500;color:#e5d7b8}
 .explore-palette-skin-toggle small{font-size:9px;line-height:1.5;color:#aaa393}
+
+
+/* Tonal labels for the Colour DNA palette */
+.explore-palette-swatch small{text-transform:capitalize}
