@@ -484,3 +484,9 @@ body{overflow:hidden}
 
 /* Tonal labels for the Colour DNA palette */
 .explore-palette-swatch small{text-transform:capitalize}
+
+
+/* Colour DNA palette editor */
+.explore-palette-colour-input{width:100%;height:30px;padding:2px;border:1px solid #625944;background:#29271f;cursor:pointer}
+.explore-palette-swatch{grid-template-columns:1fr auto;align-items:center}
+.explore-palette-swatch .explore-palette-colour-input{grid-column:1/-1}
