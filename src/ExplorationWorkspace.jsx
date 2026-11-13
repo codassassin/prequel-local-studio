@@ -1,5 +1,5 @@
 import React,{useCallback,useEffect,useMemo,useRef,useState}from'react';
-import{ArrowLeft,Copy,Download,ExternalLink,FileImage,Link2,MousePointer2,Plus,Save,Sparkles,MessageCircle,Trash2,ZoomIn,ZoomOut,Star,GitMerge}from'lucide-react';
+import{ArrowLeft,Copy,Download,ExternalLink,FileImage,Link2,MousePointer2,Plus,Save,Sparkles,MessageCircle,Trash2,ZoomIn,ZoomOut,Star,GitMerge,Palette}from'lucide-react';
 
 const DB_NAME='stillroom-projects';
 const STORE='projects';
