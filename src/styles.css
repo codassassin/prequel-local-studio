@@ -330,3 +330,10 @@ body{overflow:hidden}
 .explore-intensity-panel p{font-size:9px;line-height:1.5;color:#999384;margin:0}
 .explore-intensity-panel button{align-self:flex-start;background:#d0bd8f;border:0;color:#171611;padding:8px 12px;font-size:10px;font-weight:600}
 .explore-intensity-panel button:disabled{opacity:.4}
+
+/* Make the collaborator's primary action visually explicit */
+.explore-discover-list>button.explore-suggestion-card{width:100%;cursor:pointer}
+.explore-discover-list>button.explore-suggestion-card:disabled{opacity:.65;cursor:wait}
+.explore-create-variation{display:flex;align-items:center;justify-content:center;gap:8px;align-self:stretch;margin-top:5px;padding:10px 12px;background:#d0bd8f;color:#171611;border:1px solid #d0bd8f;font:600 10px ui-sans-serif,system-ui,sans-serif;letter-spacing:.15px}
+.explore-create-variation span{font-size:14px}
+.explore-suggestion-card:hover .explore-create-variation{background:#e1d0a8;border-color:#e1d0a8}
