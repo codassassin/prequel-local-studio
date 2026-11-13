@@ -102,8 +102,10 @@ Palette Transfer applies a saved Colour DNA palette to a different photograph.
 ### What the algorithm does
 
 - Works on a local copy capped at 1024 pixels on its longest side.
-- Maps target brightness through the donor's ordered palette.
-- Uses a smooth transition between palette colours.
+- Separates the donor palette into shadow, midtone and highlight groups.
+- Maps target shadows to donor shadow colours, target midtones to donor midtone colours, and target highlights to donor highlight colours.
+- Uses a smooth transition between colours within each tonal group.
+- Falls back to the complete donor palette if a tonal group is unavailable.
 - Restores the target's luminance contribution before blending.
 - Blends the remapped colour with the target according to the influence setting.
 - Produces a new JPEG-backed experiment node.
