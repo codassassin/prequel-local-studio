@@ -46,12 +46,17 @@ async function renderPaletteTransferBlob(sourceBlob,colors,intensity=45,preserve
   const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;
   const ctx=canvas.getContext('2d',{willReadFrequently:true});if(!ctx)throw new Error('Could not create a local colour-transfer canvas.');
   ctx.drawImage(bitmap,0,0,width,height);
-  const palette=colors.map(item=>{const hex=item.hex.replace('#','');const r=parseInt(hex.slice(0,2),16),g=parseInt(hex.slice(2,4),16),b=parseInt(hex.slice(4,6),16);return{r,g,b,l:.2126*r+.7152*g+.0722*b};}).sort((a,b)=>a.l-b.l);
-  if(palette.length<2)throw new Error('The reference palette needs at least two colours.');
+  const parseColour=item=>{const hex=item.hex.replace('#','');const r=parseInt(hex.slice(0,2),16),g=parseInt(hex.slice(2,4),16),b=parseInt(hex.slice(4,6),16);return{r,g,b,l:.2126*r+.7152*g+.0722*b};};
+  const paletteGroups={shadow:colors.filter(item=>item.tone==='shadow').map(parseColour).sort((a,b)=>a.l-b.l),midtone:colors.filter(item=>item.tone==='midtone').map(parseColour).sort((a,b)=>a.l-b.l),highlight:colors.filter(item=>item.tone==='highlight').map(parseColour).sort((a,b)=>a.l-b.l)};
+  const allPalette=colors.map(parseColour).sort((a,b)=>a.l-b.l);
+  if(allPalette.length<2)throw new Error('The reference palette needs at least two colours.');
+  const chooseTone=(l)=>l<85?'shadow':l<170?'midtone':'highlight';
+  const toneRange={shadow:[0,85],midtone:[85,170],highlight:[170,255]};
   const frame=ctx.getImageData(0,0,width,height),pixels=frame.data,amount=Math.max(0,Math.min(100,intensity))/100;
   for(let i=0;i<pixels.length;i+=4){
    const r=pixels[i],g=pixels[i+1],b=pixels[i+2],targetL=.2126*r+.7152*g+.0722*b;
-   const position=(targetL/255)*(palette.length-1),low=Math.floor(position),high=Math.min(palette.length-1,low+1),rawMix=position-low;
+   const tone=chooseTone(targetL),palette=paletteGroups[tone].length?paletteGroups[tone]:allPalette,[rangeMin,rangeMax]=toneRange[tone];
+   const position=Math.max(0,Math.min(1,(targetL-rangeMin)/Math.max(1,rangeMax-rangeMin)))*(palette.length-1),low=Math.floor(position),high=Math.min(palette.length-1,low+1),rawMix=position-low;
    const mix=rawMix*rawMix*(3-2*rawMix),a=palette[low],bColor=palette[high];
    const pr=a.r+(bColor.r-a.r)*mix,pg=a.g+(bColor.g-a.g)*mix,pb=a.b+(bColor.b-a.b)*mix;
    const paletteL=.2126*pr+.7152*pg+.0722*pb,luminosityOffset=targetL-paletteL;
