@@ -427,3 +427,16 @@ body{overflow:hidden}
 .explore-constellation-create{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;margin-top:16px;padding:12px;background:#d0bd8f;border:1px solid #d0bd8f;color:#171611;font-size:11px;font-weight:700;cursor:pointer}
 .explore-constellation-create:disabled{opacity:.45;cursor:not-allowed}
 @media(max-width:520px){.explore-constellation-panel{padding:16px}.explore-constellation-pickers{grid-template-columns:1fr;gap:10px}.explore-constellation-plus{height:12px}}
+
+/* Creative DNA: transparent local preference summary */
+.explore-dna-panel{position:absolute;z-index:13;top:88px;right:18px;bottom:54px;width:min(360px,calc(100vw - 36px));display:flex;flex-direction:column;gap:16px;padding:18px;background:#201f1af7;border:1px solid #8c7950;box-shadow:0 18px 55px #000a;color:#e9e1d2;overflow:auto}
+.explore-dna-panel .explore-discover-heading p{margin:6px 0 0;color:#aaa393;font-size:10px;line-height:1.5}
+.explore-dna-traits{display:flex;flex-direction:column;gap:18px}
+.explore-dna-trait>div:first-child{display:flex;flex-direction:column;gap:5px}
+.explore-dna-trait strong{font:15px Georgia,serif;font-weight:400;color:#e5d7b8}
+.explore-dna-trait span{font-size:10px;color:#aaa393;line-height:1.45}
+.explore-dna-meter{position:relative;height:4px;margin-top:9px;background:#514a3c}
+.explore-dna-meter i{position:absolute;top:50%;width:12px;height:12px;border:2px solid #211f19;border-radius:50%;background:#d0bd8f;transform:translate(-50%,-50%);box-shadow:0 0 0 1px #d0bd8f}
+.explore-dna-note{padding:12px;background:#29271f;border-left:2px solid #8c7950;color:#aaa393;font-size:10px;line-height:1.6}
+.explore-dna-suggest{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:auto;padding:11px;background:#d0bd8f;border:1px solid #d0bd8f;color:#171611;font-size:10px;font-weight:700;cursor:pointer}
+@media(max-width:600px){.explore-dna-panel{top:72px;right:8px;bottom:48px;width:calc(100vw - 16px);padding:12px}}
