@@ -443,3 +443,6 @@ body{overflow:hidden}
 
 /* Discovery labels distinguish familiar directions from deliberate creative challenges */
 .explore-dna-fit{display:inline-flex!important;align-self:flex-start;margin-top:5px;padding:4px 6px;background:#393326;border:1px solid #756344;color:#dfc995!important;font:8px ui-monospace,monospace!important;letter-spacing:.08em}
+
+/* Visual Idea Fusion uses the same calm modal language as Constellations */
+.explore-fusion-recipe-note{font-size:10px;line-height:1.6;color:#aaa393}
