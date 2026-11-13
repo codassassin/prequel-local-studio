@@ -50,14 +50,18 @@ async function renderPaletteTransferBlob(sourceBlob,colors,intensity=45){
   if(palette.length<2)throw new Error('The reference palette needs at least two colours.');
   const frame=ctx.getImageData(0,0,width,height),pixels=frame.data,amount=Math.max(0,Math.min(100,intensity))/100;
   for(let i=0;i<pixels.length;i+=4){
-   const l=.2126*pixels[i]+.7152*pixels[i+1]+.0722*pixels[i+2],position=(l/255)*(palette.length-1),low=Math.floor(position),high=Math.min(palette.length-1,low+1),mix=position-low,a=palette[low],b=palette[high];
-   const pr=a.r+(b.r-a.r)*mix,pg=a.g+(b.g-a.g)*mix,pb=a.b+(b.b-a.b)*mix;
-   pixels[i]=Math.max(0,Math.min(255,pixels[i]*(1-amount)+pr*amount));
-   pixels[i+1]=Math.max(0,Math.min(255,pixels[i+1]*(1-amount)+pg*amount));
-   pixels[i+2]=Math.max(0,Math.min(255,pixels[i+2]*(1-amount)+pb*amount));
+   const r=pixels[i],g=pixels[i+1],b=pixels[i+2],targetL=.2126*r+.7152*g+.0722*b;
+   const position=(targetL/255)*(palette.length-1),low=Math.floor(position),high=Math.min(palette.length-1,low+1),rawMix=position-low;
+   const mix=rawMix*rawMix*(3-2*rawMix),a=palette[low],bColor=palette[high];
+   const pr=a.r+(bColor.r-a.r)*mix,pg=a.g+(bColor.g-a.g)*mix,pb=a.b+(bColor.b-a.b)*mix;
+   const paletteL=.2126*pr+.7152*pg+.0722*pb,luminosityOffset=targetL-paletteL;
+   const mappedR=pr+luminosityOffset,mappedG=pg+luminosityOffset,mappedB=pb+luminosityOffset;
+   pixels[i]=Math.max(0,Math.min(255,r+(mappedR-r)*amount));
+   pixels[i+1]=Math.max(0,Math.min(255,g+(mappedG-g)*amount));
+   pixels[i+2]=Math.max(0,Math.min(255,b+(mappedB-b)*amount));
   }
   ctx.putImageData(frame,0,0);
-  const blob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error('Could not render the palette experiment.')),'image/jpeg',.93));
+  const blob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error('Could not render the palette experiment.')),'image/jpeg',.94));
   return{blob,width,height};
  }finally{bitmap?.close?.();if(url)URL.revokeObjectURL(url);}
 }
