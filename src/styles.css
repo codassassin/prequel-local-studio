@@ -365,3 +365,12 @@ body{overflow:hidden}
 .explore-compare-slider output{color:#d8c397;font-family:ui-monospace,monospace}
 .explore-compare-slider input{width:100%;accent-color:#c9b582}
 .explore-compare-modal>footer{display:flex;justify-content:space-between;gap:12px;font:9px ui-monospace,monospace;color:#9d9788}
+
+/* The comparison divider itself is the only slider control */
+.explore-compare-divider{width:18px;transform:translateX(-9px);background:transparent;border:0;cursor:ew-resize;touch-action:none;z-index:4}
+.explore-compare-divider:before{content:"";position:absolute;top:0;bottom:0;left:8px;width:2px;background:#e2cf9f;box-shadow:0 0 5px #0008}
+.explore-compare-divider span{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:grid;place-items:center;width:34px;height:34px;border:1px solid #e2cf9f;border-radius:50%;background:#d0bd8f;color:#171611;font-size:16px;box-shadow:0 2px 10px #0008;pointer-events:none}
+.explore-compare-divider:hover span,.explore-compare-divider:focus-visible span{background:#ead9b2;outline:2px solid #fff4d4;outline-offset:2px}
+.explore-compare-stage{cursor:ew-resize;user-select:none}
+.explore-compare-stage img{pointer-events:none;user-select:none}
+.explore-compare-slider{display:none!important}
