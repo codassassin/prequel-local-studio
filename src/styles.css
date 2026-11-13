@@ -456,3 +456,11 @@ body{overflow:hidden}
 .explore-palette-swatch strong{font:12px ui-monospace,monospace;color:#e5d7b8}
 .explore-palette-swatch small{grid-column:1/-1;font-size:9px;color:#aaa393}
 .explore-palette-swatch button{grid-column:2;grid-row:2;padding:4px 7px;background:transparent;border:1px solid #625944;color:#d9c9a5;font-size:9px;cursor:pointer}
+
+
+/* Palette transfer controls */
+.explore-palette-transfer-preview{display:flex;gap:5px;height:42px;margin:8px 0}
+.explore-palette-transfer-preview span{flex:1;min-width:0;border:1px solid #ffffff22}
+.explore-palette-strength{display:flex;flex-direction:column;gap:9px;color:#cfc4ad;font-size:11px}
+.explore-palette-strength strong{color:#e5d7b8;font-weight:500}
+.explore-palette-strength input{width:100%;accent-color:#c5ad7d;cursor:pointer}
