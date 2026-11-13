@@ -381,3 +381,9 @@ body{overflow:hidden}
 .explore-compare-divider span{pointer-events:none;z-index:2}
 .explore-compare-stage{position:relative;isolation:isolate;overflow:hidden;touch-action:pan-y}
 .explore-compare-overlay{pointer-events:none}
+
+/* Sibling experiment navigation inside the comparison header */
+.explore-compare-switcher{display:flex;align-items:center;gap:8px;margin-top:12px}
+.explore-compare-switcher button{padding:7px 10px;background:#29271f;border:1px solid #65583c;color:#e3d3ad;font-size:10px;cursor:pointer}
+.explore-compare-switcher button:disabled{opacity:.35;cursor:not-allowed}
+.explore-compare-switcher span{min-width:42px;text-align:center;color:#b7a477;font:9px ui-monospace,monospace}
