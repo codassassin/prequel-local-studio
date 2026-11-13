@@ -345,3 +345,23 @@ body{overflow:hidden}
 .explore-discover-list>button.explore-suggestion-card:disabled .explore-create-variation{background:#5a5344;border-color:#5a5344;color:#e6dcc4!important}
 .explore-discover-list>button.explore-suggestion-card:disabled .explore-create-variation span{color:#e6dcc4!important}
 .explore-discover-list>button.explore-suggestion-card:not(:disabled):hover .explore-create-variation{background:#e4d2a7;border-color:#e4d2a7}
+
+/* Original vs experiment comparison */
+.explore-compare-backdrop{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:22px;background:#080806e8}
+.explore-compare-modal{width:min(900px,100%);max-height:92vh;overflow:auto;background:#201f1a;border:1px solid #8c7950;box-shadow:0 24px 80px #000b;padding:20px;color:#e9e1d2}
+.explore-compare-modal>header{display:flex;justify-content:space-between;gap:18px;margin-bottom:16px}
+.explore-compare-modal>header small{font:8px ui-monospace,monospace;letter-spacing:1.2px;color:#b7a477}
+.explore-compare-modal>header h2{font:24px Georgia,serif;font-weight:400;margin:6px 0}
+.explore-compare-modal>header p{font-size:11px;color:#aaa393;margin:0}
+.explore-compare-modal>header>button{align-self:flex-start;background:transparent;border:1px solid #62563b;color:#d8c397;width:32px;height:32px;font-size:20px}
+.explore-compare-stage{position:relative;width:100%;max-height:65vh;aspect-ratio:4/3;overflow:hidden;background:#111}
+.explore-compare-stage>img,.explore-compare-overlay,.explore-compare-overlay img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.explore-compare-overlay{overflow:hidden}
+.explore-compare-divider{position:absolute;top:0;bottom:0;width:2px;background:#e2cf9f;transform:translateX(-1px);pointer-events:none}
+.explore-compare-divider span{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#d0bd8f;color:#171611;font-size:15px}
+.explore-compare-label{position:absolute;top:12px;padding:5px 8px;background:#171611d9;color:#e8dcc1;font:8px ui-monospace,monospace;letter-spacing:1px}
+.explore-compare-label.original{left:12px}.explore-compare-label.variation{right:12px}
+.explore-compare-slider{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:16px 0 8px;font-size:10px;color:#b9b2a3}
+.explore-compare-slider output{color:#d8c397;font-family:ui-monospace,monospace}
+.explore-compare-slider input{width:100%;accent-color:#c9b582}
+.explore-compare-modal>footer{display:flex;justify-content:space-between;gap:12px;font:9px ui-monospace,monospace;color:#9d9788}
