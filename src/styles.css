@@ -440,3 +440,6 @@ body{overflow:hidden}
 .explore-dna-note{padding:12px;background:#29271f;border-left:2px solid #8c7950;color:#aaa393;font-size:10px;line-height:1.6}
 .explore-dna-suggest{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:auto;padding:11px;background:#d0bd8f;border:1px solid #d0bd8f;color:#171611;font-size:10px;font-weight:700;cursor:pointer}
 @media(max-width:600px){.explore-dna-panel{top:72px;right:8px;bottom:48px;width:calc(100vw - 16px);padding:12px}}
+
+/* Discovery labels distinguish familiar directions from deliberate creative challenges */
+.explore-dna-fit{display:inline-flex!important;align-self:flex-start;margin-top:5px;padding:4px 6px;background:#393326;border:1px solid #756344;color:#dfc995!important;font:8px ui-monospace,monospace!important;letter-spacing:.08em}
