@@ -67,7 +67,8 @@ Colour DNA creates a small colour reference from a selected photograph or experi
 2. Choose **Colour DNA**.
 3. If no palette exists yet, the workspace analyses a small preview locally.
 4. Review the colour swatches, their hex values, tonal labels and approximate preview shares.
-5. Use **Copy** on a swatch to copy its hex value when needed.
+5. Use the colour picker on any swatch to replace its colour. The edited hex value is saved with the experiment and becomes the palette used by Palette Transfer.
+6. Use **Copy** on a swatch to copy its hex value when needed.
 
 ### How extraction works
 
