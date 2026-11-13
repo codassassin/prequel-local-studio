@@ -337,3 +337,11 @@ body{overflow:hidden}
 .explore-create-variation{display:flex;align-items:center;justify-content:center;gap:8px;align-self:stretch;margin-top:5px;padding:10px 12px;background:#d0bd8f;color:#171611;border:1px solid #d0bd8f;font:600 10px ui-sans-serif,system-ui,sans-serif;letter-spacing:.15px}
 .explore-create-variation span{font-size:14px}
 .explore-suggestion-card:hover .explore-create-variation{background:#e1d0a8;border-color:#e1d0a8}
+
+/* Ensure the primary action overrides generic suggestion-card span styling */
+.explore-discover-list>button.explore-suggestion-card .explore-create-variation{width:100%;box-sizing:border-box;color:#171611!important;background:#d0bd8f;border:1px solid #d0bd8f;font-size:11px;font-weight:700;line-height:1.25;opacity:1}
+.explore-discover-list>button.explore-suggestion-card .explore-create-variation span{color:#171611!important;font-size:14px;line-height:1}
+.explore-discover-list>button.explore-suggestion-card:not(:disabled){opacity:1}
+.explore-discover-list>button.explore-suggestion-card:disabled .explore-create-variation{background:#5a5344;border-color:#5a5344;color:#e6dcc4!important}
+.explore-discover-list>button.explore-suggestion-card:disabled .explore-create-variation span{color:#e6dcc4!important}
+.explore-discover-list>button.explore-suggestion-card:not(:disabled):hover .explore-create-variation{background:#e4d2a7;border-color:#e4d2a7}
