@@ -43,7 +43,7 @@ async function renderPaletteTransferBlob(sourceBlob,colors,intensity=45,preserve
    bitmap=await new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=()=>reject(new Error('Could not read the target photograph.'));image.src=url;});
   }
   const sw=bitmap.width||bitmap.naturalWidth,sh=bitmap.height||bitmap.naturalHeight,ratio=maxDimension>0?Math.min(1,maxDimension/Math.max(sw,sh)):1,width=Math.max(1,Math.round(sw*ratio)),height=Math.max(1,Math.round(sh*ratio));
-  const estimatedBytes=width*height*4;if(estimatedBytes>900*1024*1024)throw new Error('This photograph is too large for a single full-resolution browser canvas. Try a smaller source for now; tiled rendering is planned.');
+  const pixelCount=width*height;if(pixelCount>40000000||width>32767||height>32767)throw new Error('This photograph exceeds the current safe full-resolution canvas limit (40 megapixels). The original is untouched; use a smaller working copy until tiled rendering is available.');
   const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;
   const ctx=canvas.getContext('2d',{willReadFrequently:true});if(!ctx)throw new Error('Could not create a local colour-transfer canvas.');
   ctx.drawImage(bitmap,0,0,width,height);
