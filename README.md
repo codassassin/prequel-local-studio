@@ -89,3 +89,6 @@ Features evolve on feature branches. Treat newly added functionality as experime
 
 
 **Image import:** the picker lists common web image formats and additional TIFF, HEIC/HEIF, BMP, GIF, SVG and camera RAW extensions. Actual decoding depends on browser support; dedicated local RAW/HEIC/TIFF decoders are not yet included.
+
+
+**Additional local decoders:** HEIC/HEIF and TIFF are normalized to PNG in the browser before editing. Camera RAW and layered PSD/PSB decoding are not yet implemented; the picker may list these extensions, but Stillroom will report them as unsupported rather than silently failing. Original files are not uploaded or overwritten.
