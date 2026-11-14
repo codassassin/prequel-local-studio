@@ -665,3 +665,20 @@ select,input,textarea{border-radius:var(--sr-radius-sm)}
 .preset-card:focus-visible{outline:none;box-shadow:var(--sr-focus)}
 @media(max-width:1180px){.preset-grid{gap:15px 10px}.preset-swatch{height:112px}}
 @media(max-width:760px){.preset-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 12px}.preset-swatch{height:clamp(120px,34vw,190px)}}
+
+
+/* Stage 4 — immersive photo presentation */
+.stage.has-image{display:flex;flex-direction:column;align-items:stretch;justify-content:stretch;gap:0;padding:0;background:radial-gradient(ellipse at 50% 45%,#29251e 0%,#1a1915 68%,#151410 100%)!important;border-color:#554a37;box-shadow:inset 0 0 0 6px #ffffff03}
+.photo-stage-heading{min-height:48px;box-sizing:border-box;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:16px;border-bottom:1px solid #ffffff0c;background:linear-gradient(90deg,#211f19,#191813)}
+.photo-stage-heading>div:first-child{min-width:0;display:flex;flex-direction:column;gap:3px}
+.photo-stage-kicker{font:8px ui-monospace,monospace;letter-spacing:1.5px;color:#a8956e}
+.photo-stage-heading strong{font:500 12px Georgia,serif;color:#e5ddce;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:min(48vw,560px)}
+.photo-stage-specs{display:flex;align-items:center;gap:9px;flex:0 0 auto;color:#948b79;font:8px ui-monospace,monospace;letter-spacing:.5px}
+.photo-stage-specs i{height:3px;width:3px;border-radius:50%;background:#bba579}
+.stage.has-image .preview-wrap{box-sizing:border-box;width:100%;max-width:none;max-height:none;min-height:360px;flex:1 1 auto;padding:clamp(18px,3vw,38px);overflow:auto;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#302a20 0%,#1c1a15 65%,#171612 100%)}
+.stage.has-image .preview-wrap canvas{max-width:min(100%,1120px);max-height:calc(100vh - 330px);width:auto;height:auto;object-fit:contain;box-shadow:0 28px 80px #000b,0 0 0 1px #e9e1d21c,0 0 0 8px #e9e1d208}
+.stage.has-image .preview-controls{bottom:18px;left:50%;padding:7px 11px;gap:11px;border-color:#776748;background:#171612ed;backdrop-filter:blur(12px)}
+.stage.has-image .preview-controls button{width:26px;height:26px;border:1px solid transparent;color:#d7c7a2}
+.stage.has-image .preview-controls button:hover{border-color:#8e7b55;background:#c5ad7d16}
+.stage.has-image .compare-label{top:18px;left:18px;border:1px solid #c5ad7d88;background:#171612df;color:#e6d4ac;letter-spacing:1.2px}
+@media(max-width:760px){.photo-stage-heading{align-items:flex-start;flex-direction:column;gap:7px}.photo-stage-heading strong{max-width:78vw}.photo-stage-specs{font-size:7px}.stage.has-image .preview-wrap{min-height:320px;padding:14px}.stage.has-image .preview-wrap canvas{max-height:58vh}}
