@@ -1,12 +1,54 @@
 const extensionOf = file => (file.name.split(".").pop() || "").toLowerCase();
 
-async function decodeHeic(file) {
+async function encodeBitmapAsPng(bitmap, file) {
+  const canvas = document.createElement("canvas");
+  canvas.width = bitmap.width;
+  canvas.height = bitmap.height;
+  const context = canvas.getContext("2d");
+  if (!context) throw new Error("Could not create a HEIC working canvas.");
+  context.drawImage(bitmap, 0, 0);
+  const png = await new Promise((resolve, reject) => {
+    canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error("Could not encode the HEIC working copy.")), "image/png");
+  });
+  return new File([png], file.name.replace(/\\.(heic|heif)$/i, ".png"), { type: "image/png" });
+}
+
+async function decodeHeicWithBrowser(file) {
+  if (typeof createImageBitmap !== "function") {
+    throw new Error("Native browser HEIC decoding is unavailable.");
+  }
+  const bitmap = await createImageBitmap(file);
+  try {
+    return await encodeBitmapAsPng(bitmap, file);
+  } finally {
+    bitmap.close?.();
+  }
+}
+
+async function decodeHeicWithLibrary(file) {
   const loaded = await import("heic2any");
   const convert = loaded.default || loaded;
   const output = await convert({ blob: file, toType: "image/png" });
   const blob = Array.isArray(output) ? output[0] : output;
   if (!(blob instanceof Blob)) throw new Error("The HEIC decoder returned no image data.");
-  return new File([blob], file.name.replace(/\.(heic|heif)$/i, ".png"), { type: "image/png" });
+  return new File([blob], file.name.replace(/\\.(heic|heif)$/i, ".png"), { type: "image/png" });
+}
+
+async function decodeHeic(file) {
+  const failures = [];
+  // Prefer the browser's native decoder when available; it may support HEIC
+  // profiles that the bundled libheif build does not.
+  try {
+    return await decodeHeicWithBrowser(file);
+  } catch (error) {
+    failures.push("browser decoder: " + (error?.message || "unsupported"));
+  }
+  try {
+    return await decodeHeicWithLibrary(file);
+  } catch (error) {
+    failures.push("bundled decoder: " + (error?.message || "unsupported"));
+  }
+  throw new Error("This HEIC/HEIF variant is not supported by the available local decoders (" + failures.join("; ") + "). Try exporting the photo as JPEG or PNG.");
 }
 
 async function decodeTiff(file) {
@@ -27,20 +69,20 @@ async function decodeTiff(file) {
   if (!context) throw new Error("Could not create a TIFF working canvas.");
   context.putImageData(new ImageData(new Uint8ClampedArray(rgba), width, height), 0, 0);
   const png = await new Promise((resolve, reject) => canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error("Could not encode TIFF working copy.")), "image/png"));
-  return new File([png], file.name.replace(/\.(tif|tiff)$/i, ".png"), { type: "image/png" });
+  return new File([png], file.name.replace(/\\.(tif|tiff)$/i, ".png"), { type: "image/png" });
 }
 
 export async function normalizeImageFile(file) {
   const extension = extensionOf(file);
-  if (["heic", "heif"].includes(extension) || /image\/hei[cf]/i.test(file.type)) {
+  if (["heic", "heif"].includes(extension) || /image\\/hei[cf]/i.test(file.type)) {
     try { return await decodeHeic(file); }
     catch (error) { throw new Error("HEIC/HEIF decoding failed locally: " + (error?.message || "unknown decoder error")); }
   }
-  if (["tif", "tiff"].includes(extension) || /image\/tiff/i.test(file.type)) {
+  if (["tif", "tiff"].includes(extension) || /image\\/tiff/i.test(file.type)) {
     try { return await decodeTiff(file); }
     catch (error) { throw new Error("TIFF decoding failed locally: " + (error?.message || "unknown decoder error")); }
   }
-  if (/\.(cr2|cr3|nef|arw|dng|raf|orf|rw2|pef|srw|psd|psb)$/i.test(file.name)) {
+  if (/\\.(cr2|cr3|nef|arw|dng|raf|orf|rw2|pef|srw|psd|psb)$/i.test(file.name)) {
     throw new Error("This RAW or layered file needs a dedicated decoder that is not yet integrated. Your original file remains unchanged and local.");
   }
   return file;
