@@ -78,7 +78,7 @@ Stage 4 refines the photo-loaded Darkroom stage: a more pronounced warm frame, s
 
 ## Next design stages
 
-1. Main Darkroom photo-loaded composition and image presentation.
+1. Main Darkroom photo-loaded composition and image presentation (Stage 4 implemented).
 2. Look Library card previews and stronger selection feedback (Stage 3 implemented).
 3. Exploration canvas cards, grouping and toolbar hierarchy.
 4. Shared control refinement (sliders, inputs, modals and contextual actions).
