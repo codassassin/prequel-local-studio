@@ -862,3 +862,5 @@ select,input,textarea{border-radius:var(--sr-radius-sm)}
 .brush-adjust-panel output{font-variant-numeric:tabular-nums;text-align:right;opacity:.75}
 .brush-adjustments{display:flex;flex-direction:column;gap:10px;padding-top:12px;border-top:1px solid var(--border,rgba(255,255,255,.1))}
 .brush-adjustments>b,.brush-adjust-panel header>b{font-size:11px;letter-spacing:.1em}
+
+.tabs{grid-template-columns:repeat(5,minmax(0,1fr))}.tabs button{gap:4px;font-size:10px;padding-left:2px;padding-right:2px}.stage.has-image .preview-wrap{min-height:420px;flex:1 1 auto}.stage.has-image .preview-wrap canvas{width:auto;height:auto;max-width:100%;max-height:calc(100vh - 270px)}
