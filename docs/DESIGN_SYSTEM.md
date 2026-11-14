@@ -99,3 +99,8 @@ Stage 4 refines the photo-loaded Darkroom stage: a more pronounced warm frame, s
 ## Stage 4.1 — Fit-to-workspace image canvas
 
 The loaded-photo preview is a bounded, non-scrollable stage. At 100% zoom, the complete image is constrained by the available stage width and height using `max-width: 100%`, `max-height: 100%` and `object-fit: contain`. The stage clips overflow rather than introducing an internal scrollbar. Zoom above 100% magnifies the image within the same frame, so portions outside the viewport may be clipped. The image-processing pipeline and source image dimensions are not changed by this layout rule.
+
+
+## Stage 5 — Look Archive
+
+The Looks tab is presented as a curated recipe archive. An introductory editorial block explains the collection, and category chips show the number of available looks in each group. Cards display three compact recipe descriptors derived from their existing values: temperature (warm/cool/neutral), contrast (punchy/soft/balanced), and texture character (textured/diffused/clean). These are heuristic labels for browsing, not measured image analysis or AI classifications. The original preset and saved-look data structures, search/filter behaviour, localStorage persistence and `apply()` function are retained.
