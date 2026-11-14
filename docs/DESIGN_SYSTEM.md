@@ -68,9 +68,11 @@ These are CSS custom properties in `:root` with the `--sr-` prefix.
 
 ## Current implementation scope
 
-The initial foundation pass updates the global CSS tokens and restyles existing surfaces in `src/styles.css`: application background, top bar, stage, empty state, preview frame, sidebar, tabs, look library controls, buttons, Exploration toolbar and shared panels.
+The foundation pass establishes global CSS tokens and shared visual language in `src/styles.css`.
 
-It does not yet redesign the information architecture, replace the look-card artwork, or change editing/rendering logic. Those belong to later focused stages.
+Stage 2 adds a component-level redesign to the empty Main Darkroom stage in `src/App.jsx`: a two-column editorial welcome composition, a clear local photo-import action, format/privacy microcopy and a restrained photographic-print illustration. The existing hidden file input and `load()` workflow remain the source of import behaviour. The new composition adapts to narrower screens.
+
+The photo-loaded canvas, Look Library card system and filmstrip have not yet been structurally redesigned. The welcome artwork is decorative and does not represent an actual user photo.
 
 ## Next design stages
 
