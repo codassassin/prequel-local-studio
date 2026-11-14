@@ -8,7 +8,11 @@ This guide covers the current browser-based Stillroom application, with particul
 
 Stillroom uses the **Editorial Darkroom** design direction: warm dark surfaces, parchment text, restrained brass accents, serif editorial headings and compact technical labels. The image remains the centre of the workspace; the surrounding controls are intentionally quieter. Selected controls and keyboard focus use the brass accent. On narrower screens, the Develop tools move below the image stage.
 
-## 2. Start Stillroom
+## 2. The Darkroom welcome screen
+
+When no photograph is loaded, the main stage presents an editorial welcome composition with a short introduction and an **Open a photograph** action. Select it to open the local file picker, or drag an image onto the application. Supported formats are JPG, PNG, WebP and AVIF. The decorative print artwork is part of the empty state; it is not a sample photograph or an image uploaded by Stillroom.
+
+## 3. Start Stillroom
 
 ### Requirements
 - Node.js 20.19+ or 22.12+
@@ -33,7 +37,7 @@ npm run build
 npm run preview
 ```
 
-## 3. Import and edit a photograph
+## 4. Import and edit a photograph
 
 1. Open Stillroom and add a photograph using the import control.
 2. Browse the available original looks/presets.
@@ -43,7 +47,7 @@ npm run preview
 
 The original source should be kept separately if it is important. Exported edits are new output files.
 
-## 4. Explore photographs and experiments
+## 5. Explore photographs and experiments
 
 The Exploration workspace is a visual canvas for organising photographs and creative branches.
 
@@ -63,7 +67,7 @@ The Exploration workspace is a visual canvas for organising photographs and crea
 
 The workspace stores project data in browser IndexedDB. It is local to that browser profile and device; it is not cloud-synchronised. Avoid clearing site data if you want to keep the project.
 
-## 5. Colour DNA: extract a palette
+## 6. Colour DNA: extract a palette
 
 Colour DNA creates a small colour reference from a selected photograph or experiment.
 
@@ -83,7 +87,7 @@ Colour DNA creates a small colour reference from a selected photograph or experi
 
 This is lightweight, deterministic colour quantisation. It is not AI, face detection, semantic image understanding, or a complete description of an image's visual style.
 
-## 6. Palette Transfer: borrow a palette
+## 7. Palette Transfer: borrow a palette
 
 Palette Transfer applies a saved Colour DNA palette to a different photograph.
 
@@ -128,7 +132,7 @@ The optional protection uses broad colour-channel thresholds to reduce palette i
 
 It does not transfer texture, objects, composition, lighting direction, depth, or learned artistic style. It is a deterministic colour-remapping experiment—not generative AI or neural style transfer.
 
-## 7. Saved Palette Library
+## 8. Saved Palette Library
 
 The Palette Library stores named palettes in this browser so they can be reused across separate Exploration projects in the same browser profile.
 
@@ -145,7 +149,7 @@ The Palette Library stores named palettes in this browser so they can be reused 
 - Clearing site data can delete the library. There is not yet a palette export/import or cloud-sync feature.
 - If browser storage is unavailable or full, the UI reports that saving may not persist.
 
-## 8. Privacy and local storage
+## 9. Privacy and local storage
 
 - Photo editing and palette analysis/remapping happen in the browser.
 - The palette tools do not upload photographs to a Stillroom server.
@@ -153,7 +157,7 @@ The Palette Library stores named palettes in this browser so they can be reused 
 - Clearing browser/site storage can remove local project data. Keep separate exports/backups of important results.
 - Some AI Studio model files may be downloaded from Hugging Face the first time the relevant feature is used and cached by the browser. This initial model download requires network access unless local model files are configured.
 
-## 9. Troubleshooting
+## 10. Troubleshooting
 
 ### The app does not start
 - Confirm your Node.js version: `node --version`.
@@ -188,7 +192,7 @@ The donor must be a node with an image and an extracted palette containing at le
 ### The project disappears
 Check that you are using the same browser profile and local app origin as before. IndexedDB data is origin-specific. Check browser site storage and avoid clearing it. The application does not currently provide cloud project recovery.
 
-## 10. Suggested verification checklist for new builds
+## 11. Suggested verification checklist for new builds
 
 After pulling a new development branch:
 
@@ -211,7 +215,7 @@ Then verify:
 - [ ] The new experiment appears without replacing either source node.
 - [ ] Reloading the same local project retains its nodes and palette metadata.
 
-## 11. Capability and licensing notes
+## 12. Capability and licensing notes
 
 Stillroom contains a mix of conventional image-processing features and experimental AI-assisted features. UI labels should not be interpreted as proof of machine learning: Colour DNA and Palette Transfer are deterministic algorithms.
 
