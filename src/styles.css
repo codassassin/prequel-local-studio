@@ -503,3 +503,13 @@ body{overflow:hidden}
 .explore-palette-library-item>small{font-size:10px;color:#aaa393}
 .explore-palette-library-actions{display:flex;flex-wrap:wrap;gap:6px}
 @media(max-width:520px){.explore-palette-library-save{grid-template-columns:minmax(0,1fr)}}
+
+
+/* Exploration toolbar: consistent control sizing and horizontal overflow */
+.explore-toolbar{box-sizing:border-box;justify-content:stretch;gap:12px;min-width:0;overflow:hidden;padding:6px 14px}
+.explore-tools{flex:1 1 auto;min-width:0;gap:8px;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;scrollbar-color:#625944 transparent;padding:2px 0}
+.explore-tools button{box-sizing:border-box;flex:0 0 112px;width:112px;min-width:112px;height:44px;min-height:44px;padding:6px 8px;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:normal;text-align:center;line-height:1.2;font-size:10px}
+.explore-tools button svg{flex:0 0 auto;width:14px;height:14px}
+.explore-tools button .explore-count{flex:0 0 auto}
+.explore-zoom{flex:0 0 auto;gap:7px}
+@media(max-width:900px){.explore-toolbar{padding:6px 9px;gap:8px}.explore-tools button{flex-basis:104px;width:104px;min-width:104px}}
