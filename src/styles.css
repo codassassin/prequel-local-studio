@@ -613,3 +613,33 @@ select,input,textarea{border-radius:var(--sr-radius-sm)}
 @media(max-width:1050px){.layout{grid-template-columns:minmax(0,1fr) 330px}.workspace{padding:24px 22px 18px}}
 @media(max-width:760px){.topbar{padding:0 16px;gap:12px;flex-wrap:wrap;height:auto;min-height:64px}.top-center{display:none}.layout{grid-template-columns:minmax(0,1fr)}.workspace{min-height:65vh}.sidebar{border-left:0;border-top:1px solid var(--sr-line)}.stage{min-height:380px}.workspace-head{align-items:flex-start;gap:12px}.image-meta{max-width:42%;overflow-wrap:anywhere}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}
+
+
+/* Stage 2 — Editorial Darkroom entry composition */
+.stage:not(.has-image){position:relative;overflow:hidden;min-height:480px;background:#1d1b16!important;background-image:radial-gradient(ellipse at 72% 48%,#40332355 0%,transparent 42%),linear-gradient(115deg,#211f19 0%,#191813 62%,#242018 100%)!important;border:1px solid #514737;box-shadow:inset 0 0 0 7px #ffffff03,inset 0 0 80px #0005}
+.stage:not(.has-image)::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.18;background-image:radial-gradient(#c5ad7d 0.6px,transparent .6px);background-size:19px 19px;mask-image:linear-gradient(90deg,transparent 0%,#000 70%)}
+.darkroom-welcome{position:relative;z-index:1;width:min(100%,1100px);min-height:440px;margin:auto;padding:clamp(28px,5vw,76px);display:grid;grid-template-columns:minmax(260px,.9fr) minmax(280px,1.1fr);align-items:center;gap:clamp(24px,5vw,72px);text-align:left}
+.darkroom-welcome-copy{max-width:430px;position:relative;z-index:2}
+.darkroom-index,.darkroom-formats,.darkroom-art-caption{font:9px ui-monospace,SFMono-Regular,monospace;letter-spacing:1.7px;color:#b9a77e}
+.darkroom-welcome-copy h2{font:500 clamp(32px,4vw,52px)/1.06 Georgia,serif;letter-spacing:-1.2px;color:#eee5d5;margin:22px 0 16px;max-width:420px}
+.darkroom-welcome-copy p{font-size:13px;line-height:1.8;color:#b7ad9b;max-width:350px;margin:0 0 26px}
+.darkroom-welcome-copy .browse-cta{display:inline-flex;align-items:center;gap:11px;min-height:44px;padding:0 17px;border:1px solid #bca77a!important;background:#c5ad7d12!important;color:#e3d0a5!important;font-size:12px;letter-spacing:.15px}
+.darkroom-welcome-copy .browse-cta:hover{background:#c5ad7d24!important;transform:translateY(-1px)}
+.darkroom-welcome-copy .browse-cta span{font-size:16px;margin-left:8px}
+.darkroom-formats{display:flex;align-items:center;gap:10px;margin-top:36px;color:#827967;font-size:8px;letter-spacing:1.2px}
+.darkroom-formats i{width:3px;height:3px;background:#a88f61;border-radius:50%}
+.darkroom-welcome-art{height:340px;max-width:470px;width:100%;justify-self:center;position:relative;display:grid;place-items:center}
+.darkroom-print{position:absolute;width:min(62%,260px);padding:10px 10px 13px;background:#e6ddca;box-shadow:0 24px 60px #0008}
+.darkroom-print-back{transform:translate(-38px,-15px) rotate(-9deg);background:#b9ad94;opacity:.72}
+.darkroom-print-back span,.darkroom-print-front>span{display:block;font:7px ui-monospace,monospace;letter-spacing:1.2px;color:#514637;padding:4px 2px 0}
+.darkroom-print-back div{height:150px;background:linear-gradient(165deg,#82909a 0 42%,#c2a26e 43% 50%,#485342 51% 100%)}
+.darkroom-print-front{transform:translate(35px,8px) rotate(5deg);z-index:1}
+.darkroom-print-image{height:190px;background:linear-gradient(180deg,#9aaeb2 0%,#d6c5a1 48%,#766d4f 49%,#27332c 100%);position:relative;overflow:hidden}
+.darkroom-print-image::before{content:"";position:absolute;width:130%;height:42%;left:-15%;bottom:-8%;background:repeating-linear-gradient(174deg,#5d674d 0 7px,#8c875e 8px 12px,#39473c 13px 19px);transform:skewY(-8deg)}
+.darkroom-print-image::after{content:"";position:absolute;width:2px;height:90px;background:#333b2e;right:26%;top:22%;box-shadow:-18px 20px 0 -0.5px #333b2e,13px 27px 0 -0.5px #333b2e}
+.darkroom-orbit{position:absolute;border:1px solid #bca77a33;border-radius:50%;transform:rotate(-24deg)}
+.darkroom-orbit-one{width:390px;height:190px}
+.darkroom-orbit-two{width:320px;height:260px;transform:rotate(55deg)}
+.darkroom-art-caption{position:absolute;bottom:2px;right:0;color:#8e8063;font-size:8px}
+@media(max-width:900px){.darkroom-welcome{grid-template-columns:1fr;gap:4px;padding:36px}.darkroom-welcome-copy{max-width:540px}.darkroom-welcome-art{height:270px;width:min(100%,430px)}.darkroom-print-image{height:145px}.darkroom-print-back div{height:115px}}
+@media(max-width:560px){.stage:not(.has-image){min-height:620px}.darkroom-welcome{padding:28px 22px;align-content:center}.darkroom-welcome-copy h2{font-size:36px}.darkroom-welcome-art{height:250px}.darkroom-art-caption{right:10px}}
