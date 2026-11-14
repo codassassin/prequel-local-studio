@@ -2,6 +2,26 @@ import React,{useState}from'react';
 import{SlidersHorizontal,Palette,CircleDot,Type,RotateCcw,Sun,Contrast}from'lucide-react';
 const colours=['red','orange','yellow','green','cyan','blue','purple','magenta'];
 const title={red:'Red',orange:'Orange',yellow:'Yellow',green:'Green',cyan:'Cyan',blue:'Blue',purple:'Purple',magenta:'Magenta'};
+function ToneCurve({values,onChange}){
+ const channels=[['Master','curveMaster','#d8c49a'],['Red','curveRed','#ed7770'],['Green','curveGreen','#82c58c'],['Blue','curveBlue','#82a9e8']];
+ const [channel,setChannel]=React.useState('curveMaster'),[selected,setSelected]=React.useState(null);
+ const active=channels.find(c=>c[1]===channel),points=values[channel]||[{x:0,y:0},{x:1,y:1}],sorted=[...points].sort((a,b)=>a.x-b.x);
+ const path=sorted.map((p,i)=>(i?'L':'M')+' '+(12+p.x*216)+' '+(168-p.y*156)).join(' ');
+ const point=(e)=>{const r=e.currentTarget.getBoundingClientRect();return{x:Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),y:Math.max(0,Math.min(1,1-(e.clientY-r.top)/r.height))};};
+ const change=(index,p)=>onChange({...values,[channel]:points.map((v,i)=>i===index?{x:index===0?0:index===points.length-1?1:Math.max(.02,Math.min(.98,p.x)),y:index===0?0:index===points.length-1?1:p.y}:v).sort((a,b)=>a.x-b.x)});
+ const add=e=>{const p=point(e);if(sorted.length>=12)return;const next=[...sorted,p].sort((a,b)=>a.x-b.x);onChange({...values,[channel]:next});setSelected(next.indexOf(p));};
+ const reset=()=>{onChange({...values,[channel]:[{x:0,y:0},{x:1,y:1}]});setSelected(null);};
+ const remove=()=>{if(selected===null||selected===0||selected===points.length-1)return;onChange({...values,[channel]:points.filter((_,i)=>i!==selected)});setSelected(null);};
+ return <div className="tone-curve-editor">
+  <div className="tone-curve-tabs">{channels.map(([label,key,color])=><button key={key} className={channel===key?'active':''} style={{'--curve-channel':color}} onClick={()=>{setChannel(key);setSelected(null)}}>{label}</button>)}</div>
+  <svg className="tone-curve-graph" viewBox="0 0 240 180" role="img" aria-label={active[0]+' tone curve. Drag points; double-click to add.'} onPointerMove={e=>{if(selected!==null)change(selected,point(e))}} onPointerUp={()=>setSelected(null)} onPointerCancel={()=>setSelected(null)} onDoubleClick={add}>
+   {[0,1,2,3,4].map(n=><g key={n}><path d={'M '+(12+n*54)+' 12 V 168'} stroke="#ffffff18"/><path d={'M 12 '+(12+n*39)+' H 228'} stroke="#ffffff18"/></g>)}
+   <path d="M12 168 L228 12" stroke="#817761" strokeDasharray="4 4" fill="none"/><path d={path} stroke={active[2]} strokeWidth="2.8" fill="none" strokeLinejoin="round"/>
+   {sorted.map((p,i)=><circle key={i} cx={12+p.x*216} cy={168-p.y*156} r={selected===i?6:4.5} fill={active[2]} stroke="#181713" strokeWidth="2" onPointerDown={e=>{e.stopPropagation();setSelected(i);e.currentTarget.ownerSVGElement.setPointerCapture(e.pointerId)}}/>)}
+  </svg>
+  <div className="tone-curve-actions"><span>Drag points · double-click to add · endpoints are fixed</span><button className="pro-reset" disabled={selected===null||selected===0||selected===points.length-1} onClick={remove}>Remove point</button><button className="pro-reset" onClick={reset}>Reset channel</button></div>
+ </div>;
+}
 function Range({label,value,min=-100,max=100,onChange}){return <label className="pro-range"><span>{label}<output>{value}</output></span><input type="range" min={min} max={max} value={value} onChange={e=>onChange(Number(e.target.value))}/></label>}
 function Wheel({name,description,color,amount,onColor,onAmount}){return <div className="colour-wheel-control"><div className="colour-wheel-heading"><span className={'colour-wheel-disc '+name} style={{'--wheel-tint':color}}/><div><b>{name}</b><small>{description}</small></div></div><label className="wheel-tint-picker">Tint <input type="color" value={color} onChange={e=>onColor(e.target.value)}/></label><Range label="Strength" min={0} max={100} value={amount} onChange={onAmount}/></div>}
 export default function ProStudio({values,onChange,design,onDesignChange,disabled}){
@@ -23,10 +43,7 @@ export default function ProStudio({values,onChange,design,onDesignChange,disable
    <Wheel name="Midtones" description="Balanced tones" color={values.midTint||'#ffffff'} amount={values.midTintAmount||0} onColor={v=>set('midTint',v)} onAmount={v=>set('midTintAmount',v)}/>
    <Wheel name="Highlights" description="Bright tones" color={values.highlightTint||'#ffffff'} amount={values.highlightTintAmount||0} onColor={v=>set('highlightTint',v)} onAmount={v=>set('highlightTintAmount',v)}/>
   </section>
-  <section className="pro-section"><header><SlidersHorizontal size={15}/><div><b>TONE CURVE</b><small>Five-zone tonal shaping</small></div><button className="pro-reset" onClick={()=>onChange({...values,curveBlacks:0,curveShadows:0,curveMidtones:0,curveHighlights:0,curveWhites:0})}><RotateCcw size={12}/></button></header>
-   <div className="curve-preview"><svg viewBox="0 0 240 120" role="img" aria-label="Tonal curve preview"><path d="M8 8V112H232" stroke="#686252" fill="none"/><path d="M8 112L232 8" stroke="#77715e" strokeDasharray="3 4" fill="none"/><path d={`M8 ${112-(values.curveBlacks||0)*.25} C55 ${95-(values.curveShadows||0)*.4},85 ${75-(values.curveMidtones||0)*.4},120 ${60-(values.curveMidtones||0)*.3} S190 ${25-(values.curveHighlights||0)*.4},232 ${8-(values.curveWhites||0)*.25}`} stroke="#d4bd8c" strokeWidth="2.5" fill="none"/></svg></div>
-   <Range label="Blacks" value={values.curveBlacks||0} onChange={n=>set('curveBlacks',n)}/><Range label="Shadows" value={values.curveShadows||0} onChange={n=>set('curveShadows',n)}/><Range label="Midtones" value={values.curveMidtones||0} onChange={n=>set('curveMidtones',n)}/><Range label="Highlights" value={values.curveHighlights||0} onChange={n=>set('curveHighlights',n)}/><Range label="Whites" value={values.curveWhites||0} onChange={n=>set('curveWhites',n)}/>
-  </section>
+  <section className="pro-section"><header><SlidersHorizontal size={15}/><div><b>RGB TONE CURVES</b><small>Shape luminance and individual colour channels</small></div></header><ToneCurve values={values} onChange={onChange}/><div className="tone-curve-footnote">Curves are applied during image rendering and export.</div></section>
   <section className="pro-section"><header><CircleDot size={15}/><div><b>RADIAL LIGHT MASK</b><small>Feathered local exposure adjustment</small></div></header>
    <Range label="Exposure" value={values.maskAmount||0} onChange={n=>set('maskAmount',n)}/><Range label="Horizontal position" min={0} max={100} value={Math.round((values.maskX??.5)*100)} onChange={n=>set('maskX',n/100)}/><Range label="Vertical position" min={0} max={100} value={Math.round((values.maskY??.5)*100)} onChange={n=>set('maskY',n/100)}/><Range label="Radius" min={5} max={90} value={Math.round((values.maskRadius??.35)*100)} onChange={n=>set('maskRadius',n/100)}/><Range label="Feather" min={1} max={80} value={Math.round((values.maskFeather??.2)*100)} onChange={n=>set('maskFeather',n/100)}/><button className="pro-reset" onClick={()=>onChange({...values,maskAmount:0,maskX:.5,maskY:.5,maskRadius:.35,maskFeather:.2})}>Reset radial mask</button>
   </section>
