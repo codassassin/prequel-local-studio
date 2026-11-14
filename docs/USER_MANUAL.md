@@ -121,7 +121,24 @@ The optional protection uses broad colour-channel thresholds to reduce palette i
 
 It does not transfer texture, objects, composition, lighting direction, depth, or learned artistic style. It is a deterministic colour-remapping experiment—not generative AI or neural style transfer.
 
-## 6. Privacy and local storage
+## 6. Saved Palette Library
+
+The Palette Library stores named palettes in this browser so they can be reused across separate Exploration projects in the same browser profile.
+
+1. Select a node with an extracted or edited Colour DNA palette.
+2. Open **Colour DNA**, enter a name, and choose **Save to library**. You can also open **Palette library** from the toolbar and save the selected node's palette there.
+3. Open **Palette library** to review saved swatches.
+4. Choose **Apply to selected** to attach a copy of a saved palette to the currently selected photograph/experiment. This does not alter its image pixels; it changes its palette metadata for subsequent Palette Transfer.
+5. Use **Rename** to change a palette name or **Delete** to remove it from this browser's library.
+
+### Storage and portability
+
+- Saved palettes use browser `localStorage` and are separate from the Exploration project's IndexedDB record.
+- They are available to Stillroom on the same browser origin and profile, not automatically on another device or browser.
+- Clearing site data can delete the library. There is not yet a palette export/import or cloud-sync feature.
+- If browser storage is unavailable or full, the UI reports that saving may not persist.
+
+## 7. Privacy and local storage
 
 - Photo editing and palette analysis/remapping happen in the browser.
 - The palette tools do not upload photographs to a Stillroom server.
@@ -129,7 +146,7 @@ It does not transfer texture, objects, composition, lighting direction, depth, o
 - Clearing browser/site storage can remove local project data. Keep separate exports/backups of important results.
 - Some AI Studio model files may be downloaded from Hugging Face the first time the relevant feature is used and cached by the browser. This initial model download requires network access unless local model files are configured.
 
-## 7. Troubleshooting
+## 8. Troubleshooting
 
 ### The app does not start
 - Confirm your Node.js version: `node --version`.
@@ -164,7 +181,7 @@ The donor must be a node with an image and an extracted palette containing at le
 ### The project disappears
 Check that you are using the same browser profile and local app origin as before. IndexedDB data is origin-specific. Check browser site storage and avoid clearing it. The application does not currently provide cloud project recovery.
 
-## 8. Suggested verification checklist for new builds
+## 9. Suggested verification checklist for new builds
 
 After pulling a new development branch:
 
@@ -187,7 +204,7 @@ Then verify:
 - [ ] The new experiment appears without replacing either source node.
 - [ ] Reloading the same local project retains its nodes and palette metadata.
 
-## 9. Capability and licensing notes
+## 10. Capability and licensing notes
 
 Stillroom contains a mix of conventional image-processing features and experimental AI-assisted features. UI labels should not be interpreted as proof of machine learning: Colour DNA and Palette Transfer are deterministic algorithms.
 
