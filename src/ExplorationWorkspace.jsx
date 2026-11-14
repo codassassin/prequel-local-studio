@@ -31,7 +31,7 @@ async function renderExperimentBlob(sourceBlob,settings,intensity){
 }
 
 
-async function renderPaletteTransferBlob(sourceBlob,colors,intensity=45,preserveSkin=true){
+async function renderPaletteTransferBlob(sourceBlob,colors,intensity=45,preserveSkin=true,{maxDimension=1024,type='image/jpeg',quality=.92}={}){
  let bitmap=null,url=null;
  try{
   if(typeof createImageBitmap==='function'){
@@ -42,7 +42,8 @@ async function renderPaletteTransferBlob(sourceBlob,colors,intensity=45,preserve
    url=URL.createObjectURL(sourceBlob);
    bitmap=await new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=()=>reject(new Error('Could not read the target photograph.'));image.src=url;});
   }
-  const sw=bitmap.width||bitmap.naturalWidth,sh=bitmap.height||bitmap.naturalHeight,ratio=Math.min(1,1024/Math.max(sw,sh)),width=Math.max(1,Math.round(sw*ratio)),height=Math.max(1,Math.round(sh*ratio));
+  const sw=bitmap.width||bitmap.naturalWidth,sh=bitmap.height||bitmap.naturalHeight,ratio=maxDimension>0?Math.min(1,maxDimension/Math.max(sw,sh)):1,width=Math.max(1,Math.round(sw*ratio)),height=Math.max(1,Math.round(sh*ratio));
+  const estimatedBytes=width*height*4;if(estimatedBytes>900*1024*1024)throw new Error('This photograph is too large for a single full-resolution browser canvas. Try a smaller source for now; tiled rendering is planned.');
   const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;
   const ctx=canvas.getContext('2d',{willReadFrequently:true});if(!ctx)throw new Error('Could not create a local colour-transfer canvas.');
   ctx.drawImage(bitmap,0,0,width,height);
@@ -70,7 +71,7 @@ async function renderPaletteTransferBlob(sourceBlob,colors,intensity=45,preserve
    pixels[i+2]=Math.max(0,Math.min(255,b+(mappedB-b)*pixelAmount));
   }
   ctx.putImageData(frame,0,0);
-  const blob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error('Could not render the palette experiment.')),'image/jpeg',.94));
+  const blob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error('Could not render the palette experiment.')) ,type,type==='image/jpeg'?quality:undefined));
   return{blob,width,height};
  }finally{bitmap?.close?.();if(url)URL.revokeObjectURL(url);}
 }
@@ -244,7 +245,7 @@ export default function ExplorationWorkspace(){
   if(!target?.blob||!donor?.visualPalette?.colors?.length||target.id===donor.id||palettePreviewBusy)return;
   setPalettePreviewBusy(true);setPaletteTransferError('');
   try{
-   const preview=await renderPaletteTransferBlob(target.blob,donor.visualPalette.colors,paletteTransferIntensity,protectSkinTones);
+   const preview=await renderPaletteTransferBlob(target.blob,donor.visualPalette.colors,paletteTransferIntensity,protectSkinTones,{maxDimension:1024,type:'image/jpeg',quality:.9});
    const url=URL.createObjectURL(preview.blob),originalUrl=URL.createObjectURL(target.blob);
    setPalettePreviewUrl(previous=>{if(previous)URL.revokeObjectURL(previous);return url;});
    setPaletteOriginalUrl(previous=>{if(previous)URL.revokeObjectURL(previous);return originalUrl;});
@@ -258,7 +259,7 @@ export default function ExplorationWorkspace(){
   if(!target?.blob||!colors?.length||target.id===donor.id||paletteTransferBusy)return;
   setPaletteTransferBusy(true);setPaletteTransferError('');setStatus('Applying a local colour palette to a small working image…');
   try{
-   const rendered=await renderPaletteTransferBlob(target.blob,colors,paletteTransferIntensity,protectSkinTones);
+   const rendered=await renderPaletteTransferBlob(target.blob,colors,paletteTransferIntensity,protectSkinTones,{maxDimension:0,type:'image/png'});
    const child={...target,id:uid(),role:'experiment',title:target.title+' — palette from '+donor.title,blob:rendered.blob,x:Math.max(target.x,donor.x)+300,y:Math.round((target.y+donor.y)/2)+90,createdAt:Date.now(),shortlisted:false,visualPalette:{...donor.visualPalette,sourceNodeId:donor.id},creativeDirection:{id:'palette-'+Date.now(),title:'Palette transfer',hint:'Applied the dominant colour palette from '+donor.title+' to '+target.title+'. Composition and image structure are retained; this is a local colour remap, not generative style transfer.',baseNodeId:target.id,sourceNodeIds:[target.id,donor.id],paletteIntensity:paletteTransferIntensity}};
    setNodes(current=>[...current,child]);setEdges(current=>[...current,{id:uid(),from:target.id,to:child.id},{id:uid(),from:donor.id,to:child.id}]);setSelected([child.id]);setPaletteTransferOpen(false);setStatus('Palette experiment created locally. Both source photographs remain unchanged.');
   }catch(error){console.error('[Stillroom palette transfer]',error);setPaletteTransferError(error.message||'Could not apply this palette.');setStatus('Palette transfer failed.');}
