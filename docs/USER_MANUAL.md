@@ -243,3 +243,8 @@ The current BRIA RMBG-1.4 model has licensing restrictions. Review the model car
 ## Image format compatibility
 
 The file picker now lists common web image formats and additional TIFF, HEIC/HEIF, BMP, GIF, SVG and camera RAW extensions. Whether a selected file opens still depends on browser decoding support. If Stillroom cannot decode it, an error explains that the current browser cannot open the file. Dedicated in-app HEIC/HEIF, TIFF and RAW conversion is not yet implemented; for now, use a browser-supported JPEG, PNG, WebP or AVIF copy for those files.
+
+
+## Additional local image decoders
+
+Stillroom now includes local HEIC/HEIF-to-PNG and TIFF-to-PNG normalization before the existing image-loading pipeline. These conversions happen in the browser and do not upload the original file. The current decoder stage does not yet support camera RAW (CR2, CR3, NEF, ARW, DNG, RAF, ORF, RW2, PEF, SRW) or layered PSD/PSB. Selecting those files produces an explicit unsupported-decoder message. Multi-page TIFF handling and large-file memory use should be validated with representative files before relying on these imports for production work.
