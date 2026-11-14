@@ -643,3 +643,25 @@ select,input,textarea{border-radius:var(--sr-radius-sm)}
 .darkroom-art-caption{position:absolute;bottom:2px;right:0;color:#8e8063;font-size:8px}
 @media(max-width:900px){.darkroom-welcome{grid-template-columns:1fr;gap:4px;padding:36px}.darkroom-welcome-copy{max-width:540px}.darkroom-welcome-art{height:270px;width:min(100%,430px)}.darkroom-print-image{height:145px}.darkroom-print-back div{height:115px}}
 @media(max-width:560px){.stage:not(.has-image){min-height:620px}.darkroom-welcome{padding:28px 22px;align-content:center}.darkroom-welcome-copy h2{font-size:36px}.darkroom-welcome-art{height:250px}.darkroom-art-caption{right:10px}}
+
+
+/* Stage 3 — Look Library: editorial print cards */
+.preset-panel{padding-top:4px}
+.preset-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 13px;padding:5px 2px 22px}
+.preset-card{padding:0 0 10px!important;border:1px solid var(--sr-line)!important;background:linear-gradient(180deg,#25221c,#1d1b16)!important;overflow:hidden;transition:border-color .2s ease,background .2s ease,transform .2s ease,box-shadow .2s ease}
+.preset-card:hover:not(:disabled){border-color:var(--sr-line-strong)!important;transform:translateY(-3px);box-shadow:0 12px 28px #0006}
+.preset-card.chosen{border-color:var(--sr-brass)!important;background:linear-gradient(180deg,#30291e,#211e17)!important;box-shadow:0 0 0 1px #c5ad7d33,0 12px 30px #0005}
+.preset-swatch{height:clamp(105px,10vw,142px);border:0!important;background:#29251f;position:relative}
+.preset-swatch::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,#0004,transparent 32%,transparent 65%,#0006)}
+.preset-swatch .look-thumb{width:100%;height:100%;object-fit:cover;display:block}
+.preset-swatch .swatch-index,.preset-swatch .swatch-name{z-index:2}
+.preset-name{font:500 14px Georgia,serif!important;color:var(--sr-paper)!important;margin:11px 11px 5px!important;white-space:normal!important;overflow:visible!important}
+.preset-card small{font-size:10px;line-height:1.55;color:var(--sr-muted);margin:0 11px;min-height:30px}
+.look-category{display:inline-flex!important;align-items:center;width:max-content;max-width:calc(100% - 22px);margin:10px 11px 0!important;padding:4px 6px;border:1px solid var(--sr-line);color:var(--sr-brass);font:8px ui-monospace,monospace!important;letter-spacing:1px;text-transform:uppercase;white-space:nowrap!important}
+.look-selected-mark{position:absolute!important;z-index:4;right:8px;bottom:8px;display:inline-flex!important;align-items:center;gap:4px;padding:5px 7px;background:#201c14eF;border:1px solid #c5ad7d;color:#e5d2a7!important;font:8px ui-monospace,monospace!important;letter-spacing:1px}
+.preset-card.chosen .preset-name{color:var(--sr-brass-bright)!important}
+.preset-card:disabled{opacity:1!important;cursor:default}
+.preset-card:disabled .look-thumb{filter:saturate(.76) brightness(.72)}
+.preset-card:focus-visible{outline:none;box-shadow:var(--sr-focus)}
+@media(max-width:1180px){.preset-grid{gap:15px 10px}.preset-swatch{height:112px}}
+@media(max-width:760px){.preset-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 12px}.preset-swatch{height:clamp(120px,34vw,190px)}}
