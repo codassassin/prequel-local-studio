@@ -5,7 +5,8 @@ function curveLut(points){const p=Array.isArray(points)&&points.length>1?[...poi
 export function renderImage(source,width,height,v,seed=17,design={}){
  const c=document.createElement('canvas');c.width=width;c.height=height;const x=c.getContext('2d',{willReadFrequently:true});
  x.filter=v.blur?`blur(${v.blur}px)`:'none';x.drawImage(source,0,0,width,height);
- const masterCurve=curveLut(v.curveMaster),redCurve=curveLut(v.curveRed),greenCurve=curveLut(v.curveGreen),blueCurve=curveLut(v.curveBlue);\n const im=x.getImageData(0,0,width,height),d=im.data,hslActive=HSL_KEYS.some(k=>(v['hsl'+k+'Hue']||0)||(v['hsl'+k+'Sat']||0)||(v['hsl'+k+'Lum']||0)),vibrance=(v.vibrance||0)/100,maskAmount=v.maskAmount||0,maskX=v.maskX??.5,maskY=v.maskY??.5,maskRadius=v.maskRadius??.35,maskFeather=Math.max(.02,v.maskFeather??.2),exp=Math.pow(2,v.exposure/100),br=v.brightness*1.7,co=v.contrast/100,sa=v.saturation/100,wa=v.warmth*.65,ti=v.tint*.35,fa=v.fade/100,mat=v.matte/100,teal=v.teal/100;
+ const masterCurve=curveLut(v.curveMaster),redCurve=curveLut(v.curveRed),greenCurve=curveLut(v.curveGreen),blueCurve=curveLut(v.curveBlue);
+ const im=x.getImageData(0,0,width,height),d=im.data,hslActive=HSL_KEYS.some(k=>(v['hsl'+k+'Hue']||0)||(v['hsl'+k+'Sat']||0)||(v['hsl'+k+'Lum']||0)),vibrance=(v.vibrance||0)/100,maskAmount=v.maskAmount||0,maskX=v.maskX??.5,maskY=v.maskY??.5,maskRadius=v.maskRadius??.35,maskFeather=Math.max(.02,v.maskFeather??.2),exp=Math.pow(2,v.exposure/100),br=v.brightness*1.7,co=v.contrast/100,sa=v.saturation/100,wa=v.warmth*.65,ti=v.tint*.35,fa=v.fade/100,mat=v.matte/100,teal=v.teal/100;
  for(let i=0;i<d.length;i+=4){
   let r=d[i]*exp+br+wa+ti*.2,g=d[i+1]*exp+br+ti,b=d[i+2]*exp+br-wa-ti*.2;
   r=(r-128)*co+128;g=(g-128)*co+128;b=(b-128)*co+128;
@@ -35,7 +36,8 @@ export function renderImage(source,width,height,v,seed=17,design={}){
   const shadow=1-Math.min(1,l/170);r-=teal*22*shadow;g+=teal*13*shadow;b+=teal*27*shadow;
   r=r*(1-fa)+220*fa;g=g*(1-fa)+215*fa;b=b*(1-fa)+207*fa;
   r=r*(1-mat)+Math.max(0,r-70)*mat;g=g*(1-mat)+Math.max(0,g-70)*mat;b=b*(1-mat)+Math.max(0,b-70)*mat;
-  r=redCurve[masterCurve[Math.round(clamp(r))]];g=greenCurve[masterCurve[Math.round(clamp(g))]];b=blueCurve[masterCurve[Math.round(clamp(b))]];\n  d[i]=clamp(r);d[i+1]=clamp(g);d[i+2]=clamp(b);
+  r=redCurve[masterCurve[Math.round(clamp(r))]];g=greenCurve[masterCurve[Math.round(clamp(g))]];b=blueCurve[masterCurve[Math.round(clamp(b))]];
+  d[i]=clamp(r);d[i+1]=clamp(g);d[i+2]=clamp(b);
  }
  x.putImageData(im,0,0);
  if(v.split){const s=document.createElement('canvas');s.width=width;s.height=height;s.getContext('2d').drawImage(c,0,0);x.globalCompositeOperation='screen';x.globalAlpha=.22;x.drawImage(s,v.split,0);x.globalCompositeOperation='multiply';x.drawImage(s,-v.split,0);x.globalCompositeOperation='source-over';x.globalAlpha=1;}
