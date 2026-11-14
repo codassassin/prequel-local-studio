@@ -898,3 +898,11 @@ select,input,textarea{border-radius:var(--sr-radius-sm)}
 .brush-adjustments{width:100%;padding-top:14px}
 .mask-refinement{width:100%;padding:13px 0}
 @media(max-width:700px){.sidebar>.brush-adjust-panel{width:100%;max-width:620px;align-self:center;padding:16px clamp(14px,4vw,22px) 24px}.mask-layer .mask-select{grid-template-columns:10px minmax(0,1fr) auto auto}}
+
+/* Ensure mask layer cards remain visible inside the narrow scrolling sidebar */
+.sidebar .mask-layer-list{display:flex!important;flex:0 0 auto;flex-direction:column;align-items:stretch;gap:8px;width:100%;height:auto;min-height:54px;max-height:220px;overflow-y:auto;overflow-x:hidden;padding:3px 2px 5px;box-sizing:border-box}
+.sidebar .mask-layer{display:flex!important;flex:0 0 auto;align-items:center;width:100%;min-height:46px;height:auto;box-sizing:border-box;visibility:visible;opacity:1;position:relative}
+.sidebar .mask-layer .mask-select{display:grid!important;flex:1 1 auto;min-width:0;min-height:38px;visibility:visible;opacity:1}
+.sidebar .mask-layer .mask-state-toggle,.sidebar .mask-layer .mask-delete{display:inline-flex!important;align-items:center;justify-content:center;visibility:visible;opacity:1}
+.sidebar .mask-layer .mask-dot{display:block;flex:0 0 8px;width:8px;height:8px}
+.sidebar .mask-layer .mask-select-name{display:block;min-width:0;visibility:visible;opacity:1}
