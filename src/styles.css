@@ -750,3 +750,18 @@ select,input,textarea{border-radius:var(--sr-radius-sm)}
     max-height:100%;
   }
 }
+
+
+/* Stage 5 — Look Archive collection navigation and recipe metadata */
+.archive-intro{padding:12px 0 14px;border-bottom:1px solid var(--sr-line);margin-bottom:12px}
+.archive-intro>span{font:8px ui-monospace,monospace;letter-spacing:1.6px;color:var(--sr-brass)}
+.archive-intro p{font:12px/1.55 Georgia,serif;color:var(--sr-paper-muted);margin:7px 0 8px;max-width:330px}
+.archive-intro small{font:8px ui-monospace,monospace;letter-spacing:1px;color:var(--sr-muted)}
+.group-list{display:flex;gap:6px;overflow-x:auto;overflow-y:hidden;padding:3px 1px 10px;scrollbar-width:thin;scrollbar-color:var(--sr-line-strong) transparent}
+.group-list button{display:inline-flex;align-items:center;gap:7px;flex:0 0 auto;white-space:nowrap}
+.group-list button span{display:inline-grid;place-items:center;min-width:17px;height:17px;padding:0 3px;background:#ffffff08;border:1px solid var(--sr-line);color:var(--sr-muted);font:8px ui-monospace,monospace}
+.group-list button.selected span{border-color:#c5ad7d66;color:var(--sr-brass-bright);background:#c5ad7d16}
+.look-traits{display:flex;flex-wrap:wrap;gap:4px;margin:8px 10px 0}
+.look-traits i{font:7px ui-monospace,monospace;font-style:normal;letter-spacing:.7px;color:#aaa08d;border:1px solid #ffffff13;padding:3px 4px}
+.preset-card.chosen .look-traits i{border-color:#c5ad7d33;color:#d7c49c}
+@media(max-width:760px){.archive-intro p{font-size:11px}.look-traits i{font-size:6px}}
