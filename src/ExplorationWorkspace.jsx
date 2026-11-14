@@ -35,7 +35,7 @@ async function renderPaletteTransferBlob(sourceBlob,colors,intensity=45,preserve
  let bitmap=null,url=null;
  try{
   if(typeof createImageBitmap==='function'){
-   try{bitmap=await createImageBitmap(sourceBlob,{resizeWidth:1024,resizeHeight:1024,resizeQuality:'high'});}
+   try{bitmap=await createImageBitmap(sourceBlob);}
    catch(error){console.warn('[Stillroom palette transfer] Resized bitmap unavailable; using image fallback.',error);}
   }
   if(!bitmap){
@@ -79,7 +79,7 @@ async function extractDominantPalette(blob){
  let bitmap=null,url=null;
  try{
   if(typeof createImageBitmap==='function'){
-   try{bitmap=await createImageBitmap(blob,{resizeWidth:128,resizeHeight:128,resizeQuality:'high'});}
+   try{bitmap=await createImageBitmap(blob);}
    catch(error){console.warn('[Stillroom palette] Small bitmap unavailable; using image fallback.',error);}
   }
   if(!bitmap){
