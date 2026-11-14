@@ -51,6 +51,10 @@ After a photograph is loaded, the Darkroom displays its filename, pixel dimensio
 
 The photo preview fits the complete photograph inside the available Darkroom stage at 100% zoom. The preview area does not have its own scrollbars. Use the zoom controls to magnify the image; above 100%, parts of the photograph may fall outside the visible frame. Return to 100% to see the whole image fitted again.
 
+## Managing your personal looks
+
+Select **Save my look** to open the Look Workshop. Enter a name, an optional description and a collection, then choose **Save to My Looks**. Your current adjustment values are saved with the recipe on this device. On a saved look card, choose **Edit details** to change its name, description or collection, **Duplicate** to create a separate copy in My Looks, or **Delete** and confirm to remove it. Built-in looks cannot be deleted or edited through these controls. Saved looks remain in this browser's local storage.
+
 ## 5. Import and edit a photograph
 
 1. Open Stillroom and add a photograph using the import control.
