@@ -86,3 +86,6 @@ Stillroom uses the **Editorial Darkroom** visual direction: warm ink and walnut 
 ## Current development status
 
 Features evolve on feature branches. Treat newly added functionality as experimental until it has been built and tested in a browser. The palette workflow is intentionally described as deterministic colour remapping, not semantic understanding or generative style transfer.
+
+
+**Image import:** the picker lists common web image formats and additional TIFF, HEIC/HEIF, BMP, GIF, SVG and camera RAW extensions. Actual decoding depends on browser support; dedicated local RAW/HEIC/TIFF decoders are not yet included.
