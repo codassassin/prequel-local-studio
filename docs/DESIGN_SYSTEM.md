@@ -94,3 +94,8 @@ Stage 4 refines the photo-loaded Darkroom stage: a more pronounced warm frame, s
 - [ ] Check narrow viewport layout.
 - [ ] Check reduced-motion preference.
 - [ ] Confirm no photo-processing or project persistence behaviour changed.
+
+
+## Stage 4.1 — Fit-to-workspace image canvas
+
+The loaded-photo preview is a bounded, non-scrollable stage. At 100% zoom, the complete image is constrained by the available stage width and height using `max-width: 100%`, `max-height: 100%` and `object-fit: contain`. The stage clips overflow rather than introducing an internal scrollbar. Zoom above 100% magnifies the image within the same frame, so portions outside the viewport may be clipped. The image-processing pipeline and source image dimensions are not changed by this layout rule.
