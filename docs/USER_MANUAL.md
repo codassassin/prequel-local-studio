@@ -238,3 +238,8 @@ Then verify:
 Stillroom contains a mix of conventional image-processing features and experimental AI-assisted features. UI labels should not be interpreted as proof of machine learning: Colour DNA and Palette Transfer are deterministic algorithms.
 
 The current BRIA RMBG-1.4 model has licensing restrictions. Review the model card and obtain the appropriate license before commercial use or redistribution. See the README for the current model and local-model notes.
+
+
+## Image format compatibility
+
+The file picker now lists common web image formats and additional TIFF, HEIC/HEIF, BMP, GIF, SVG and camera RAW extensions. Whether a selected file opens still depends on browser decoding support. If Stillroom cannot decode it, an error explains that the current browser cannot open the file. Dedicated in-app HEIC/HEIF, TIFF and RAW conversion is not yet implemented; for now, use a browser-supported JPEG, PNG, WebP or AVIF copy for those files.
