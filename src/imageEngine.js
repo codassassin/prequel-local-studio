@@ -6,7 +6,8 @@ export function renderImage(source,width,height,v,seed=17,design={},selective=nu
  const c=document.createElement('canvas');c.width=width;c.height=height;const x=c.getContext('2d',{willReadFrequently:true});
  x.filter=v.blur?`blur(${v.blur}px)`:'none';x.drawImage(source,0,0,width,height);
  const masterCurve=curveLut(v.curveMaster),redCurve=curveLut(v.curveRed),greenCurve=curveLut(v.curveGreen),blueCurve=curveLut(v.curveBlue);
- const selectiveMaskData=selective?.maskCanvas?selective.maskCanvas.getContext('2d',{willReadFrequently:true}).getImageData(0,0,width,height).data:null;\n const im=x.getImageData(0,0,width,height),d=im.data,hslActive=HSL_KEYS.some(k=>(v['hsl'+k+'Hue']||0)||(v['hsl'+k+'Sat']||0)||(v['hsl'+k+'Lum']||0)),vibrance=(v.vibrance||0)/100,maskAmount=v.maskAmount||0,maskX=v.maskX??.5,maskY=v.maskY??.5,maskRadius=v.maskRadius??.35,maskFeather=Math.max(.02,v.maskFeather??.2),exp=Math.pow(2,v.exposure/100),br=v.brightness*1.7,co=v.contrast/100,sa=v.saturation/100,wa=v.warmth*.65,ti=v.tint*.35,fa=v.fade/100,mat=v.matte/100,teal=v.teal/100;
+ const selectiveMaskData=selective?.maskCanvas?selective.maskCanvas.getContext('2d',{willReadFrequently:true}).getImageData(0,0,width,height).data:null;
+ const im=x.getImageData(0,0,width,height),d=im.data,hslActive=HSL_KEYS.some(k=>(v['hsl'+k+'Hue']||0)||(v['hsl'+k+'Sat']||0)||(v['hsl'+k+'Lum']||0)),vibrance=(v.vibrance||0)/100,maskAmount=v.maskAmount||0,maskX=v.maskX??.5,maskY=v.maskY??.5,maskRadius=v.maskRadius??.35,maskFeather=Math.max(.02,v.maskFeather??.2),exp=Math.pow(2,v.exposure/100),br=v.brightness*1.7,co=v.contrast/100,sa=v.saturation/100,wa=v.warmth*.65,ti=v.tint*.35,fa=v.fade/100,mat=v.matte/100,teal=v.teal/100;
  for(let i=0;i<d.length;i+=4){
   let r=d[i]*exp+br+wa+ti*.2,g=d[i+1]*exp+br+ti,b=d[i+2]*exp+br-wa-ti*.2;
   r=(r-128)*co+128;g=(g-128)*co+128;b=(b-128)*co+128;
