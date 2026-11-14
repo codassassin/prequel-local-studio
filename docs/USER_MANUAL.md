@@ -41,6 +41,8 @@ npm run preview
 
 The Looks tab presents presets as editorial print cards. Each card shows a visual thumbnail, look name, short description and category. The currently applied look is marked **SELECTED** and receives a brass-accented border. Before a photo is loaded, cards remain visible as a catalogue but cannot be applied; import a photograph to preview and use a look.
 
+
+The archive introduction explains the collection, and category chips show how many looks belong to each group. Each look card also shows simple recipe descriptors for temperature, contrast and texture. These descriptors are inferred from the saved slider values; they are browsing hints, not AI analysis or measurements of the photograph.
 ## 4. The photo presentation stage
 
 After a photograph is loaded, the Darkroom displays its filename, pixel dimensions and active look in a compact frame header. The image is presented on a warm recessed stage with a floating zoom control. Use the minus and plus controls to adjust zoom, the displayed percentage to check the current scale, and the image button to choose another photograph. The **Compare** action in the top bar continues to show the original comparison state. Transform and crop controls remain below the image stage.
