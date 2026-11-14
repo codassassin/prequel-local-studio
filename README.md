@@ -34,6 +34,7 @@ The project is an independent product. It does not use PREQUEL branding, assets,
 - Visual Idea Fusion transfers a saved tonal recipe to another photograph.
 - **Colour DNA** extracts up to six representative colours from a small local preview, balanced across shadows, midtones and highlights; swatches can be manually edited and saved with the experiment.
 - **Palette Library** stores named reusable palettes in browser-local storage, independently of an individual exploration project.
+- **Palette Preview Lab** renders a local preview of a donor palette on a target photo and lets you toggle between the original and result before committing an experiment.
 - **Palette Transfer** maps donor shadow colours to target shadows, midtone colours to target midtones, and highlight colours to target highlights on a working copy, with adjustable influence and optional heuristic skin-tone protection.
 - Palette extraction and palette transfer are deterministic colour-analysis/remapping operations, not generative AI or full artistic style transfer.
 
