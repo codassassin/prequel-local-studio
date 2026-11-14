@@ -25,6 +25,11 @@ export function renderImage(source,width,height,v,seed=17,design={}){
   const lum=clamp(.2126*r+.7152*g+.0722*b),shadowWeight=1-lum/255,highlightWeight=lum/255;
   const curve=clamp(lum+(v.curveShadows||0)*shadowWeight*.45+(v.curveHighlights||0)*highlightWeight*.45+(v.curveMidtones||0)*(1-Math.abs(lum/127.5-1))*.35+(v.curveBlacks||0)*(shadowWeight**3)*.6+(v.curveWhites||0)*(highlightWeight**3)*.6);
   const curveScale=lum>1?curve/lum:1;r*=curveScale;g*=curveScale;b*=curveScale;
+  const grade=(hex,amount,weight)=>{if(!amount||weight<=0)return;const tintR=parseInt(hex.slice(1,3),16),tintG=parseInt(hex.slice(3,5),16),tintB=parseInt(hex.slice(5,7),16),strength=Math.min(1,amount/100*.55*weight);r+=(tintR-128)*strength;g+=(tintG-128)*strength;b+=(tintB-128)*strength;};
+  const shadowGrade=(1-lum/255)**2,highlightGrade=(lum/255)**2,midGrade=Math.max(0,1-Math.abs(lum-127.5)/127.5);
+  grade(v.shadowTint||'#ffffff',v.shadowTintAmount||0,shadowGrade);
+  grade(v.midTint||'#ffffff',v.midTintAmount||0,midGrade);
+  grade(v.highlightTint||'#ffffff',v.highlightTintAmount||0,highlightGrade);
   if(maskAmount){const px=(i/4)%width,py=Math.floor(i/4/width),dx=px/width-maskX,dy=py/height-maskY,dist=Math.sqrt(dx*dx+dy*dy),weight=1-Math.min(1,Math.max(0,(dist-maskRadius)/maskFeather));const local=Math.pow(2,(maskAmount/100)*weight);r*=local;g*=local;b*=local;}
   const shadow=1-Math.min(1,l/170);r-=teal*22*shadow;g+=teal*13*shadow;b+=teal*27*shadow;
   r=r*(1-fa)+220*fa;g=g*(1-fa)+215*fa;b=b*(1-fa)+207*fa;
