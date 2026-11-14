@@ -682,3 +682,24 @@ select,input,textarea{border-radius:var(--sr-radius-sm)}
 .stage.has-image .preview-controls button:hover{border-color:#8e7b55;background:#c5ad7d16}
 .stage.has-image .compare-label{top:18px;left:18px;border:1px solid #c5ad7d88;background:#171612df;color:#e6d4ac;letter-spacing:1.2px}
 @media(max-width:760px){.photo-stage-heading{align-items:flex-start;flex-direction:column;gap:7px}.photo-stage-heading strong{max-width:78vw}.photo-stage-specs{font-size:7px}.stage.has-image .preview-wrap{min-height:320px;padding:14px}.stage.has-image .preview-wrap canvas{max-height:58vh}}
+
+
+/* Stage 4 — The photograph takes centre stage */
+.stage.has-image{display:flex;flex-direction:column;align-items:stretch;justify-content:stretch;min-height:520px;overflow:hidden;background:#171612!important;background-image:radial-gradient(ellipse at 50% 45%,#393023 0%,#211e18 48%,#171612 100%)!important;border:1px solid #65563e;box-shadow:inset 0 0 0 6px #ffffff04,0 18px 50px #0005}
+.stage.has-image::before{content:"";height:1px;flex:0 0 1px;background:linear-gradient(90deg,transparent,#c5ad7d66,transparent)}
+.stage.has-image .photo-stage-heading{min-height:62px;padding:12px 20px;border-bottom:1px solid #c5ad7d26;background:linear-gradient(100deg,#28231b,#1c1a15 70%,#262117)}
+.photo-stage-kicker{font-size:8px;letter-spacing:2px;color:#c5ad7d}
+.photo-stage-heading strong{font-size:14px;letter-spacing:.1px;color:#eee5d5}
+.photo-stage-specs{font-size:9px;letter-spacing:.8px;color:#b0a48e}
+.stage.has-image .preview-wrap{position:relative;isolation:isolate;min-height:420px;padding:clamp(28px,4vw,54px);background:radial-gradient(ellipse at 50% 46%,#423829 0%,#29241c 38%,#1c1a15 78%,#171612 100%);overflow:auto}
+.stage.has-image .preview-wrap::before{content:"";position:absolute;inset:18px;z-index:-1;border:1px solid #c5ad7d1a;pointer-events:none}
+.stage.has-image .preview-wrap canvas{max-width:min(100%,1280px);max-height:calc(100vh - 310px);box-shadow:0 32px 90px #000c,0 0 0 1px #eee5d522,0 0 0 9px #eee5d208;transition:box-shadow .2s ease}
+.stage.has-image .preview-controls{bottom:20px;left:50%;gap:13px;padding:8px 13px;border:1px solid #8b7956;background:#171612eF;box-shadow:0 12px 34px #0008;backdrop-filter:blur(16px)}
+.stage.has-image .preview-controls button{width:28px;height:28px;border:1px solid transparent;border-radius:3px;color:#d6c6a4}
+.stage.has-image .preview-controls button:hover{border-color:#8b7956;background:#c5ad7d18;color:#f0dfb8}
+.stage.has-image .compare-label{top:30px;left:30px;border:1px solid #c5ad7d88;background:#171612e8;color:#ead9b6;letter-spacing:1.2px}
+.creative-toolbar{min-height:54px;margin-top:14px;padding:12px 16px;border-color:#504635;background:linear-gradient(105deg,#242119,#1a1915 72%,#242016)}
+.tool-group>span{color:#b09b70;letter-spacing:1.4px}
+.tool-group button{min-height:34px;padding:8px 11px;border-color:#514838;background:#211f19;color:#d4c9b5}
+.crop-tools select{min-height:34px;border-color:#62553e;background:#211f19}
+@media(max-width:760px){.stage.has-image{min-height:420px}.stage.has-image .photo-stage-heading{align-items:flex-start;flex-direction:column;gap:7px}.stage.has-image .photo-stage-specs{flex-wrap:wrap}.stage.has-image .preview-wrap{min-height:330px;padding:20px}.stage.has-image .preview-wrap canvas{max-height:calc(100vh - 390px)}}
