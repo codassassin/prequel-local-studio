@@ -838,3 +838,12 @@ select,input,textarea{border-radius:var(--sr-radius-sm)}
 .colour-wheel-disc::after{content:"";position:absolute;inset:0;background:var(--wheel-tint);opacity:.42;mix-blend-mode:color}
 .wheel-tint-picker{display:flex;align-items:center;justify-content:space-between;margin:8px 0;color:#b8ad99;font-size:10px}
 .wheel-tint-picker input{width:42px;height:25px;padding:2px;border:1px solid #5c503d;background:#171612}
+
+/* Interactive RGB tone curves */
+.tone-curve-editor{margin-top:12px}.tone-curve-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:10px}
+.tone-curve-tabs button{border:1px solid #514838;background:#201e19;color:#a99e89;padding:7px 3px;font:9px ui-monospace,monospace}
+.tone-curve-tabs button.active{border-color:var(--curve-channel);color:#f1e7d5;background:#ffffff0b}
+.tone-curve-graph{display:block;width:100%;height:auto;aspect-ratio:4/3;background:linear-gradient(145deg,#201e19,#171612);border:1px solid #514838;touch-action:none}
+.tone-curve-graph circle{cursor:grab}.tone-curve-actions{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-top:9px}
+.tone-curve-actions span{flex:1 1 100%;font-size:9px;line-height:1.4;color:#928875}.tone-curve-actions button{font-size:9px}
+.tone-curve-actions button:disabled{opacity:.35;cursor:not-allowed}.tone-curve-footnote{margin-top:9px;font-size:9px;line-height:1.5;color:#8e8574}
