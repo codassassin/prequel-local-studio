@@ -513,3 +513,11 @@ body{overflow:hidden}
 .explore-tools button .explore-count{flex:0 0 auto}
 .explore-zoom{flex:0 0 auto;gap:7px}
 @media(max-width:900px){.explore-toolbar{padding:6px 9px;gap:8px}.explore-tools button{flex-basis:104px;width:104px;min-width:104px}}
+
+
+/* Palette Preview Lab */
+.explore-palette-lab-actions{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.explore-palette-lab-actions button{padding:9px 13px;background:#383126;border:1px solid #75664b;color:#e5d7b8;font-size:11px;cursor:pointer}
+.explore-palette-lab-actions button:disabled{opacity:.45;cursor:not-allowed}
+.explore-palette-lab-preview{width:100%;max-height:320px;overflow:hidden;background:#151410;border:1px solid #514a3c;display:flex;align-items:center;justify-content:center}
+.explore-palette-lab-preview img{display:block;max-width:100%;max-height:320px;object-fit:contain}
