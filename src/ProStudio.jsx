@@ -8,23 +8,23 @@ function ToneCurve({values,onChange}){
  const drag=React.useRef(null);
  const active=channels.find(c=>c[1]===channel),points=values[channel]||[{x:0,y:0},{x:1,y:1}],sorted=[...points].sort((a,b)=>a.x-b.x);
  const path=sorted.map((p,i)=>(i?'L':'M')+' '+(12+p.x*216)+' '+(168-p.y*156)).join(' ');
- const point=(e,svg)=>{const r=svg.getBoundingClientRect();const sx=(e.clientX-r.left)/r.width*240,sy=(e.clientY-r.top)/r.height*180;return{x:Math.max(0,Math.min(1,(sx-12)/216)),y:Math.max(0,Math.min(1,(168-sy)/156))};};
+ const coords=e=>{const r=e.currentTarget.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width*240,y:(e.clientY-r.top)/r.height*180};};
  const publish=next=>onChange({...values,[channel]:next});
- const change=(index,p)=>{const next=[...sorted];if(index===0||index===next.length-1)return;const minX=next[index-1].x+.005,maxX=next[index+1].x-.005;next[index]={x:Math.max(minX,Math.min(maxX,p.x)),y:Math.max(0,Math.min(1,p.y))};publish(next);};
- const add=e=>{const p=point(e,e.currentTarget);if(sorted.length>=12)return;const next=[...sorted,p].sort((a,b)=>a.x-b.x);publish(next);setSelected(next.indexOf(p));};
+ const change=(index,p)=>{const next=[...sorted];if(index===0||index===next.length-1)return;const minX=next[index-1].x+.005,maxX=next[index+1].x-.005;next[index]={x:Math.max(minX,Math.min(maxX,(p.x-12)/216)),y:Math.max(0,Math.min(1,(168-p.y)/156))};publish(next);};
+ const begin=e=>{const p=coords(e),nearest=sorted.map((v,i)=>({i,x:12+v.x*216,y:168-v.y*156})).map(v=>({...v,d:Math.hypot(v.x-p.x,v.y-p.y)})).sort((a,b)=>a.d-b.d)[0];if(!nearest||nearest.d>18)return;e.preventDefault();drag.current={index:nearest.i,pointerId:e.pointerId};setSelected(nearest.i);e.currentTarget.setPointerCapture(e.pointerId);};
+ const move=e=>{if(!drag.current||drag.current.pointerId!==e.pointerId)return;e.preventDefault();change(drag.current.index,coords(e));};
+ const finish=e=>{if(drag.current&&drag.current.pointerId===e.pointerId)drag.current=null;};
+ const add=e=>{const p=coords(e),point={x:Math.max(0,Math.min(1,(p.x-12)/216)),y:Math.max(0,Math.min(1,(168-p.y)/156))};if(sorted.length>=12)return;const next=[...sorted,point].sort((a,b)=>a.x-b.x);publish(next);setSelected(next.indexOf(point));};
  const reset=()=>{publish([{x:0,y:0},{x:1,y:1}]);setSelected(null);drag.current=null;};
  const remove=()=>{if(selected===null||selected===0||selected===sorted.length-1)return;publish(sorted.filter((_,i)=>i!==selected));setSelected(null);};
- const beginDrag=(e,index)=>{e.preventDefault();e.stopPropagation();drag.current={index,pointerId:e.pointerId};setSelected(index);e.currentTarget.ownerSVGElement.setPointerCapture(e.pointerId);};
- const move=e=>{if(!drag.current||drag.current.pointerId!==e.pointerId)return;e.preventDefault();change(drag.current.index,point(e,e.currentTarget));};
- const finish=e=>{if(drag.current&&drag.current.pointerId===e.pointerId){drag.current=null;}};
  return <div className="tone-curve-editor">
   <div className="tone-curve-tabs">{channels.map(([label,key,color])=><button key={key} className={channel===key?'active':''} style={{'--curve-channel':color}} onClick={()=>{setChannel(key);setSelected(null);drag.current=null;}}>{label}</button>)}</div>
-  <svg className="tone-curve-graph" viewBox="0 0 240 180" role="img" aria-label={active[0]+' tone curve. Drag points; double-click to add.'} onPointerMove={move} onPointerUp={finish} onPointerCancel={finish} onDoubleClick={add}>
+  <svg className="tone-curve-graph" viewBox="0 0 240 180" preserveAspectRatio="none" role="img" aria-label={active[0]+' tone curve. Drag a point; double-click to add.'} onPointerDown={begin} onPointerMove={move} onPointerUp={finish} onPointerCancel={finish} onDoubleClick={add}>
    {[0,1,2,3,4].map(n=><g key={n}><path d={'M '+(12+n*54)+' 12 V 168'} stroke="#ffffff18"/><path d={'M 12 '+(12+n*39)+' H 228'} stroke="#ffffff18"/></g>)}
-   <path d="M12 168 L228 12" stroke="#817761" strokeDasharray="4 4" fill="none"/><path d={path} stroke={active[2]} strokeWidth="2.8" fill="none" strokeLinejoin="round"/>
-   {sorted.map((p,i)=><circle key={i} cx={12+p.x*216} cy={168-p.y*156} r={selected===i?6:4.5} fill={active[2]} stroke="#181713" strokeWidth="2" style={{cursor:'grab',touchAction:'none'}} onPointerDown={e=>beginDrag(e,i)}/>)}
+   <path d="M12 168 L228 12" stroke="#817761" strokeDasharray="4 4" fill="none" pointerEvents="none"/><path d={path} stroke={active[2]} strokeWidth="2.8" fill="none" strokeLinejoin="round" pointerEvents="none"/>
+   {sorted.map((p,i)=><circle key={i} cx={12+p.x*216} cy={168-p.y*156} r={selected===i?6:5.5} fill={active[2]} stroke="#181713" strokeWidth="2" pointerEvents="none"/>)}
   </svg>
-  <div className="tone-curve-actions"><span>Drag points · double-click to add · endpoints are fixed</span><button className="pro-reset" disabled={selected===null||selected===0||selected===sorted.length-1} onClick={remove}>Remove point</button><button className="pro-reset" onClick={reset}>Reset channel</button></div>
+  <div className="tone-curve-actions"><span>Drag a control point · double-click to add · endpoints are fixed</span><button className="pro-reset" disabled={selected===null||selected===0||selected===sorted.length-1} onClick={remove}>Remove point</button><button className="pro-reset" onClick={reset}>Reset channel</button></div>
  </div>;
 }
 function Range({label,value,min=-100,max=100,onChange}){return <label className="pro-range"><span>{label}<output>{value}</output></span><input type="range" min={min} max={max} value={value} onChange={e=>onChange(Number(e.target.value))}/></label>}
