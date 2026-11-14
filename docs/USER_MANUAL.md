@@ -45,11 +45,11 @@ The Looks tab presents presets as editorial print cards. Each card shows a visua
 
 After a photograph is loaded, the Darkroom displays its filename, pixel dimensions and active look in a compact frame header. The image is presented on a warm recessed stage with a floating zoom control. Use the minus and plus controls to adjust zoom, the displayed percentage to check the current scale, and the image button to choose another photograph. The **Compare** action in the top bar continues to show the original comparison state. Transform and crop controls remain below the image stage.
 
-## 5. Fitting the photograph in the canvas
+## Viewing the photograph
 
 The photo preview fits the complete photograph inside the available Darkroom stage at 100% zoom. The preview area does not have its own scrollbars. Use the zoom controls to magnify the image; above 100%, parts of the photograph may fall outside the visible frame. Return to 100% to see the whole image fitted again.
 
-## 6. Import and edit a photograph
+## 5. Import and edit a photograph
 
 1. Open Stillroom and add a photograph using the import control.
 2. Browse the available original looks/presets.
