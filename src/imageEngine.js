@@ -6,7 +6,7 @@ export function renderImage(source,width,height,v,seed=17,design={},selective=nu
  const c=document.createElement('canvas');c.width=width;c.height=height;const x=c.getContext('2d',{willReadFrequently:true});
  x.filter=v.blur?`blur(${v.blur}px)`:'none';x.drawImage(source,0,0,width,height);
  const masterCurve=curveLut(v.curveMaster),redCurve=curveLut(v.curveRed),greenCurve=curveLut(v.curveGreen),blueCurve=curveLut(v.curveBlue);
- const im=x.getImageData(0,0,width,height),d=im.data,hslActive=HSL_KEYS.some(k=>(v['hsl'+k+'Hue']||0)||(v['hsl'+k+'Sat']||0)||(v['hsl'+k+'Lum']||0)),vibrance=(v.vibrance||0)/100,maskAmount=v.maskAmount||0,maskX=v.maskX??.5,maskY=v.maskY??.5,maskRadius=v.maskRadius??.35,maskFeather=Math.max(.02,v.maskFeather??.2),exp=Math.pow(2,v.exposure/100),br=v.brightness*1.7,co=v.contrast/100,sa=v.saturation/100,wa=v.warmth*.65,ti=v.tint*.35,fa=v.fade/100,mat=v.matte/100,teal=v.teal/100;
+ const selectiveMaskData=selective?.maskCanvas?selective.maskCanvas.getContext('2d',{willReadFrequently:true}).getImageData(0,0,width,height).data:null;\n const im=x.getImageData(0,0,width,height),d=im.data,hslActive=HSL_KEYS.some(k=>(v['hsl'+k+'Hue']||0)||(v['hsl'+k+'Sat']||0)||(v['hsl'+k+'Lum']||0)),vibrance=(v.vibrance||0)/100,maskAmount=v.maskAmount||0,maskX=v.maskX??.5,maskY=v.maskY??.5,maskRadius=v.maskRadius??.35,maskFeather=Math.max(.02,v.maskFeather??.2),exp=Math.pow(2,v.exposure/100),br=v.brightness*1.7,co=v.contrast/100,sa=v.saturation/100,wa=v.warmth*.65,ti=v.tint*.35,fa=v.fade/100,mat=v.matte/100,teal=v.teal/100;
  for(let i=0;i<d.length;i+=4){
   let r=d[i]*exp+br+wa+ti*.2,g=d[i+1]*exp+br+ti,b=d[i+2]*exp+br-wa-ti*.2;
   r=(r-128)*co+128;g=(g-128)*co+128;b=(b-128)*co+128;
@@ -24,7 +24,7 @@ export function renderImage(source,width,height,v,seed=17,design={},selective=nu
    if(hh<60){rr=cc;gg=xx;}else if(hh<120){rr=xx;gg=cc;}else if(hh<180){gg=cc;bb=xx;}else if(hh<240){gg=xx;bb=cc;}else if(hh<300){rr=xx;bb=cc;}else{rr=cc;bb=xx;}
    r=(rr+mm)*255;g=(gg+mm)*255;b=(bb+mm)*255;
   }
-  if(selective?.maskCanvas){const maskCtx=selective.maskCanvas.getContext('2d',{willReadFrequently:true});const maskData=maskCtx.getImageData(0,0,width,height).data;const amount=maskData[i+3]/255,settings=selective.settings||{};if(amount>0){const localExp=Math.pow(2,(settings.exposure||0)/100*amount);r*=localExp;g*=localExp;b*=localExp;const localLum=.2126*r+.7152*g+.0722*b,localSat=1+(settings.saturation||0)/100*amount;r=localLum+(r-localLum)*localSat;g=localLum+(g-localLum)*localSat;b=localLum+(b-localLum)*localSat;const warmth=(settings.warmth||0)*amount*.35;r+=warmth;b-=warmth;}}
+  if(selectiveMaskData){const amount=selectiveMaskData[i+3]/255,settings=selective.settings||{};if(amount>0){const localExp=Math.pow(2,(settings.exposure||0)/100*amount);r*=localExp;g*=localExp;b*=localExp;const localLum=.2126*r+.7152*g+.0722*b,localSat=1+(settings.saturation||0)/100*amount;r=localLum+(r-localLum)*localSat;g=localLum+(g-localLum)*localSat;b=localLum+(b-localLum)*localSat;const warmth=(settings.warmth||0)*amount*.35;r+=warmth;b-=warmth;}}
   const lum=clamp(.2126*r+.7152*g+.0722*b),shadowWeight=1-lum/255,highlightWeight=lum/255;
   const curve=clamp(lum+(v.curveShadows||0)*shadowWeight*.45+(v.curveHighlights||0)*highlightWeight*.45+(v.curveMidtones||0)*(1-Math.abs(lum/127.5-1))*.35+(v.curveBlacks||0)*(shadowWeight**3)*.6+(v.curveWhites||0)*(highlightWeight**3)*.6);
   const curveScale=lum>1?curve/lum:1;r*=curveScale;g*=curveScale;b*=curveScale;
