@@ -847,3 +847,18 @@ select,input,textarea{border-radius:var(--sr-radius-sm)}
 .tone-curve-graph circle{cursor:grab}.tone-curve-actions{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-top:9px}
 .tone-curve-actions span{flex:1 1 100%;font-size:9px;line-height:1.4;color:#928875}.tone-curve-actions button{font-size:9px}
 .tone-curve-actions button:disabled{opacity:.35;cursor:not-allowed}.tone-curve-footnote{margin-top:9px;font-size:9px;line-height:1.5;color:#8e8574}
+
+
+/* Selective brush workspace */
+.mask-overlay-source{display:none!important}
+.preview-wrap.brush-active canvas:first-child{cursor:crosshair;touch-action:none}
+.brush-adjust-panel{display:flex;flex-direction:column;gap:12px;padding:16px;margin:14px 0;border:1px solid var(--border,rgba(255,255,255,.12));border-radius:14px;background:var(--panel,rgba(255,255,255,.025));color:inherit}
+.brush-adjust-panel header,.brush-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.brush-adjust-panel header{justify-content:space-between}
+.brush-adjust-panel button{border:1px solid var(--border,rgba(255,255,255,.16));border-radius:8px;padding:7px 10px;background:transparent;color:inherit;cursor:pointer}
+.brush-adjust-panel button.active{border-color:var(--accent,#c9a77a);background:rgba(201,167,122,.14)}
+.brush-adjust-panel label{display:grid;grid-template-columns:88px minmax(80px,1fr) 44px;gap:10px;align-items:center;font-size:12px}
+.brush-adjust-panel input[type=range]{width:100%;accent-color:var(--accent,#c9a77a)}
+.brush-adjust-panel output{font-variant-numeric:tabular-nums;text-align:right;opacity:.75}
+.brush-adjustments{display:flex;flex-direction:column;gap:10px;padding-top:12px;border-top:1px solid var(--border,rgba(255,255,255,.1))}
+.brush-adjustments>b,.brush-adjust-panel header>b{font-size:11px;letter-spacing:.1em}
