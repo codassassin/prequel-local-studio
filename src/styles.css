@@ -703,3 +703,50 @@ select,input,textarea{border-radius:var(--sr-radius-sm)}
 .tool-group button{min-height:34px;padding:8px 11px;border-color:#514838;background:#211f19;color:#d4c9b5}
 .crop-tools select{min-height:34px;border-color:#62553e;background:#211f19}
 @media(max-width:760px){.stage.has-image{min-height:420px}.stage.has-image .photo-stage-heading{align-items:flex-start;flex-direction:column;gap:7px}.stage.has-image .photo-stage-specs{flex-wrap:wrap}.stage.has-image .preview-wrap{min-height:330px;padding:20px}.stage.has-image .preview-wrap canvas{max-height:calc(100vh - 390px)}}
+
+
+/* Stage 4.1 — Fit the complete photograph; never scroll the preview */
+.stage.has-image{
+  min-height:0;
+  height:clamp(440px,calc(100vh - 255px),900px);
+  overflow:hidden;
+}
+.stage.has-image .preview-wrap{
+  flex:1 1 0;
+  min-height:0;
+  height:0;
+  width:100%;
+  max-height:none;
+  padding:clamp(14px,2vw,28px);
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.stage.has-image .preview-wrap canvas{
+  display:block;
+  flex:0 1 auto;
+  width:auto;
+  height:auto;
+  max-width:100%;
+  max-height:100%;
+  object-fit:contain;
+  transform-origin:center center;
+}
+.stage.has-image .preview-controls{
+  bottom:12px;
+}
+@media(max-width:760px){
+  .stage.has-image{
+    height:clamp(380px,calc(100svh - 300px),680px);
+    min-height:0;
+  }
+  .stage.has-image .preview-wrap{
+    min-height:0;
+    padding:12px;
+  }
+  .stage.has-image .preview-wrap canvas{
+    max-width:100%;
+    max-height:100%;
+  }
+}
