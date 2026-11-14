@@ -935,3 +935,5 @@ select,input,textarea{border-radius:var(--sr-radius-sm)}
   .stage.has-image .preview-wrap{overflow:auto!important}
   .stage.has-image .preview-wrap canvas{max-height:58vh!important}
 }
+
+.preview-wrap canvas.canvas-pan-ready{cursor:grab;touch-action:none;user-select:none}.preview-wrap canvas.canvas-pan-ready:active{cursor:grabbing}.preview-wrap canvas{will-change:transform}
