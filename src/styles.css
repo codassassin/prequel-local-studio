@@ -877,3 +877,24 @@ select,input,textarea{border-radius:var(--sr-radius-sm)}
 .mask-layer .mask-state-toggle.enabled{border-color:#789b86;color:#a8c8b5;background:#789b8618}
 .mask-enable-status{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:#c7c0b2}.mask-enable-status strong{font-size:10px;color:#a8c8b5;font-weight:500}
 @media(max-width:700px){.sidebar>.brush-adjust-panel{flex:0 1 auto;max-height:72vh;min-height:320px;overflow-y:auto;margin-bottom:12px}}
+
+/* Brush panel alignment and explicit layer selection */
+.sidebar>.brush-adjust-panel{width:100%;align-items:stretch;padding:16px clamp(12px,1.4vw,18px) 24px;margin-top:12px;gap:14px}
+.brush-adjust-panel>*{width:100%;min-width:0}
+.brush-adjust-panel header,.mask-layer-heading{align-items:center;justify-content:space-between;gap:12px}
+.mask-layer-list{width:100%;gap:8px;max-height:220px;padding:2px}
+.mask-layer{width:100%;min-height:48px;align-items:center;padding:4px 6px;gap:6px}
+.mask-layer .mask-select{min-width:0;min-height:38px;padding:6px 8px;display:grid;grid-template-columns:10px minmax(0,1fr) auto auto;align-items:center;gap:9px;border:1px solid transparent;border-radius:7px;text-align:left}
+.mask-layer .mask-select[aria-pressed=true]{background:#d0bd8f12;border-color:#8c795055}
+.mask-select-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#e7e0d2;font-size:12px}
+.mask-layer .mask-select small{margin:0;white-space:nowrap;font-size:9px}
+.mask-layer .mask-select em{font:8px ui-monospace,monospace;letter-spacing:.7px;font-style:normal;color:#d5bd8c;white-space:nowrap}
+.mask-layer .mask-select strong{font-size:9px;font-weight:500;color:#a9a293;border:1px solid #555044;border-radius:5px;padding:4px 6px;white-space:nowrap}
+.mask-layer .mask-state-toggle{min-width:42px;min-height:30px}
+.brush-adjust-panel>label,.mask-refinement label,.brush-adjustments label{width:100%;grid-template-columns:minmax(84px,104px) minmax(0,1fr) 38px;align-items:center;gap:10px}
+.brush-adjust-panel input[type=range],.mask-refinement input[type=range]{width:100%;min-width:0}
+.brush-adjust-panel .mask-name-input{width:100%;max-width:none}
+.brush-tools{justify-content:flex-start;gap:8px}
+.brush-adjustments{width:100%;padding-top:14px}
+.mask-refinement{width:100%;padding:13px 0}
+@media(max-width:700px){.sidebar>.brush-adjust-panel{width:100%;max-width:620px;align-self:center;padding:16px clamp(14px,4vw,22px) 24px}.mask-layer .mask-select{grid-template-columns:10px minmax(0,1fr) auto auto}}
