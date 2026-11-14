@@ -1,9 +1,12 @@
 const clamp=(v,a=0,b=255)=>Math.min(b,Math.max(a,v));
 const HSL_KEYS=['red','orange','yellow','green','cyan','blue','purple','magenta'];
 const HSL_CENTERS={red:0,orange:30,yellow:60,green:120,cyan:180,blue:240,purple:275,magenta:320};
-export function renderImage(source,width,height,v,seed=17,design={}){
+function curveLut(points){const p=Array.isArray(points)&&points.length>1?[...points].sort((a,b)=>a.x-b.x):[{x:0,y:0},{x:1,y:1}],lut=new Uint8Array(256);for(let i=0;i<256;i++){const x=i/255;let a=p[0],b=p[p.length-1];for(let j=0;j<p.length-1;j++){if(x>=p[j].x&&x<=p[j+1].x){a=p[j];b=p[j+1];break;}}const t=Math.max(0,Math.min(1,(x-a.x)/Math.max(1e-6,b.x-a.x)));lut[i]=Math.round(clamp((a.y+(b.y-a.y)*t)*255));}return lut;}
+export function renderImage(source,width,height,v,seed=17,design={},selective=null){
  const c=document.createElement('canvas');c.width=width;c.height=height;const x=c.getContext('2d',{willReadFrequently:true});
  x.filter=v.blur?`blur(${v.blur}px)`:'none';x.drawImage(source,0,0,width,height);
+ const masterCurve=curveLut(v.curveMaster),redCurve=curveLut(v.curveRed),greenCurve=curveLut(v.curveGreen),blueCurve=curveLut(v.curveBlue);
+ const selectiveMaskData=selective?.maskCanvas?selective.maskCanvas.getContext('2d',{willReadFrequently:true}).getImageData(0,0,width,height).data:null;
  const im=x.getImageData(0,0,width,height),d=im.data,hslActive=HSL_KEYS.some(k=>(v['hsl'+k+'Hue']||0)||(v['hsl'+k+'Sat']||0)||(v['hsl'+k+'Lum']||0)),vibrance=(v.vibrance||0)/100,maskAmount=v.maskAmount||0,maskX=v.maskX??.5,maskY=v.maskY??.5,maskRadius=v.maskRadius??.35,maskFeather=Math.max(.02,v.maskFeather??.2),exp=Math.pow(2,v.exposure/100),br=v.brightness*1.7,co=v.contrast/100,sa=v.saturation/100,wa=v.warmth*.65,ti=v.tint*.35,fa=v.fade/100,mat=v.matte/100,teal=v.teal/100;
  for(let i=0;i<d.length;i+=4){
   let r=d[i]*exp+br+wa+ti*.2,g=d[i+1]*exp+br+ti,b=d[i+2]*exp+br-wa-ti*.2;
@@ -22,13 +25,20 @@ export function renderImage(source,width,height,v,seed=17,design={}){
    if(hh<60){rr=cc;gg=xx;}else if(hh<120){rr=xx;gg=cc;}else if(hh<180){gg=cc;bb=xx;}else if(hh<240){gg=xx;bb=cc;}else if(hh<300){rr=xx;bb=cc;}else{rr=cc;bb=xx;}
    r=(rr+mm)*255;g=(gg+mm)*255;b=(bb+mm)*255;
   }
+  if(selectiveMaskData){const amount=selectiveMaskData[i+3]/255,settings=selective.settings||{};if(amount>0){const localExp=Math.pow(2,(settings.exposure||0)/100*amount);r*=localExp;g*=localExp;b*=localExp;const localLum=.2126*r+.7152*g+.0722*b,localSat=1+(settings.saturation||0)/100*amount;r=localLum+(r-localLum)*localSat;g=localLum+(g-localLum)*localSat;b=localLum+(b-localLum)*localSat;const warmth=(settings.warmth||0)*amount*.35;r+=warmth;b-=warmth;}}
   const lum=clamp(.2126*r+.7152*g+.0722*b),shadowWeight=1-lum/255,highlightWeight=lum/255;
   const curve=clamp(lum+(v.curveShadows||0)*shadowWeight*.45+(v.curveHighlights||0)*highlightWeight*.45+(v.curveMidtones||0)*(1-Math.abs(lum/127.5-1))*.35+(v.curveBlacks||0)*(shadowWeight**3)*.6+(v.curveWhites||0)*(highlightWeight**3)*.6);
   const curveScale=lum>1?curve/lum:1;r*=curveScale;g*=curveScale;b*=curveScale;
+  const grade=(hex,amount,weight)=>{if(!amount||weight<=0)return;const tintR=parseInt(hex.slice(1,3),16),tintG=parseInt(hex.slice(3,5),16),tintB=parseInt(hex.slice(5,7),16),strength=Math.min(1,amount/100*.55*weight);r+=(tintR-128)*strength;g+=(tintG-128)*strength;b+=(tintB-128)*strength;};
+  const shadowGrade=(1-lum/255)**2,highlightGrade=(lum/255)**2,midGrade=Math.max(0,1-Math.abs(lum-127.5)/127.5);
+  grade(v.shadowTint||'#ffffff',v.shadowTintAmount||0,shadowGrade);
+  grade(v.midTint||'#ffffff',v.midTintAmount||0,midGrade);
+  grade(v.highlightTint||'#ffffff',v.highlightTintAmount||0,highlightGrade);
   if(maskAmount){const px=(i/4)%width,py=Math.floor(i/4/width),dx=px/width-maskX,dy=py/height-maskY,dist=Math.sqrt(dx*dx+dy*dy),weight=1-Math.min(1,Math.max(0,(dist-maskRadius)/maskFeather));const local=Math.pow(2,(maskAmount/100)*weight);r*=local;g*=local;b*=local;}
   const shadow=1-Math.min(1,l/170);r-=teal*22*shadow;g+=teal*13*shadow;b+=teal*27*shadow;
   r=r*(1-fa)+220*fa;g=g*(1-fa)+215*fa;b=b*(1-fa)+207*fa;
   r=r*(1-mat)+Math.max(0,r-70)*mat;g=g*(1-mat)+Math.max(0,g-70)*mat;b=b*(1-mat)+Math.max(0,b-70)*mat;
+  r=redCurve[masterCurve[Math.round(clamp(r))]];g=greenCurve[masterCurve[Math.round(clamp(g))]];b=blueCurve[masterCurve[Math.round(clamp(b))]];
   d[i]=clamp(r);d[i+1]=clamp(g);d[i+2]=clamp(b);
  }
  x.putImageData(im,0,0);
@@ -48,3 +58,4 @@ export function renderImage(source,width,height,v,seed=17,design={}){
  }
  return c;
 }
+export function applySelectiveAdjustments(source,width,height,maskCanvas,settings={}){const out=document.createElement('canvas');out.width=width;out.height=height;const ctx=out.getContext('2d',{willReadFrequently:true});ctx.drawImage(source,0,0,width,height);const image=ctx.getImageData(0,0,width,height),pixels=image.data,mask=maskCanvas.getContext('2d',{willReadFrequently:true}).getImageData(0,0,width,height).data;for(let i=0;i<pixels.length;i+=4){const amount=mask[i+3]/255;if(!amount)continue;let r=pixels[i],g=pixels[i+1],b=pixels[i+2];const exposure=Math.pow(2,(settings.exposure||0)/100*amount);r*=exposure;g*=exposure;b*=exposure;const luminance=.2126*r+.7152*g+.0722*b,saturation=1+(settings.saturation||0)/100*amount;r=luminance+(r-luminance)*saturation;g=luminance+(g-luminance)*saturation;b=luminance+(b-luminance)*saturation;const warmth=(settings.warmth||0)*amount*.35;pixels[i]=Math.max(0,Math.min(255,r+warmth));pixels[i+1]=Math.max(0,Math.min(255,g));pixels[i+2]=Math.max(0,Math.min(255,b-warmth));}ctx.putImageData(image,0,0);return out;}

@@ -1,6 +1,8 @@
 export const defaults={
  exposure:0,brightness:0,contrast:100,saturation:100,warmth:0,tint:0,fade:0,vignette:0,grain:0,blur:0,split:0,scanlines:0,
  bloom:0,halation:0,lightLeak:0,dust:0,scratches:0,teal:0,matte:0,glow:0,hue:0,vibrance:0,curveShadows:0,curveMidtones:0,curveHighlights:0,curveBlacks:0,curveWhites:0,maskAmount:0,maskX:.5,maskY:.5,maskRadius:.35,maskFeather:.2,
+ curveMaster:[{x:0,y:0},{x:1,y:1}],curveRed:[{x:0,y:0},{x:1,y:1}],curveGreen:[{x:0,y:0},{x:1,y:1}],curveBlue:[{x:0,y:0},{x:1,y:1}],
+ shadowTint:'#ffffff',midTint:'#ffffff',highlightTint:'#ffffff',shadowTintAmount:0,midTintAmount:0,highlightTintAmount:0,
  hslredHue:0,hslredSat:0,hslredLum:0,hslorangeHue:0,hslorangeSat:0,hslorangeLum:0,hslyellowHue:0,hslyellowSat:0,hslyellowLum:0,hslgreenHue:0,hslgreenSat:0,hslgreenLum:0,hslcyanHue:0,hslcyanSat:0,hslcyanLum:0,hslblueHue:0,hslblueSat:0,hslblueLum:0,hslpurpleHue:0,hslpurpleSat:0,hslpurpleLum:0,hslmagentaHue:0,hslmagentaSat:0,hslmagentaLum:0,
 };
 export const presets=[
