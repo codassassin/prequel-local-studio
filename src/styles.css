@@ -916,3 +916,22 @@ select,input,textarea{border-radius:var(--sr-radius-sm)}
 .stage.has-image .preview-wrap{min-height:0;padding:12px 22px;overflow:hidden}
 .stage.has-image .preview-wrap canvas{max-height:calc(100vh - 205px);max-width:100%}
 @media(max-width:760px){.stage.has-image .preview-wrap{min-height:0;padding:10px}.stage.has-image .preview-wrap canvas{max-height:calc(100vh - 270px)}}
+
+/* Canvas sizing correction: allocate the full desktop viewport to the photograph */
+@media (min-width: 761px){
+  .app{height:100dvh!important;min-height:100dvh!important;overflow:hidden!important}
+  .topbar{height:60px!important;min-height:60px!important;flex:0 0 60px;padding-top:0;padding-bottom:0}
+  .layout{height:calc(100dvh - 60px)!important;min-height:0!important;flex:1 1 auto;overflow:hidden!important;grid-template-columns:minmax(0,1fr) 330px}
+  .workspace{height:100%!important;min-height:0!important;overflow:hidden!important;display:flex;flex-direction:column;padding:14px 22px 10px!important}
+  .workspace-head{flex:0 0 auto;margin-bottom:10px!important;min-height:44px}
+  .workspace-head h1{margin-top:4px;font-size:clamp(23px,2vw,30px)}
+  .stage.has-image{flex:1 1 0!important;min-height:0!important;height:auto!important;overflow:hidden!important}
+  .stage.has-image .photo-stage-heading{flex:0 0 48px;min-height:48px!important;padding:8px 16px!important}
+  .stage.has-image .preview-wrap{flex:1 1 0!important;height:auto!important;min-height:0!important;max-height:none!important;padding:10px 14px!important;overflow:hidden!important}
+  .stage.has-image .preview-wrap canvas{max-width:100%!important;max-height:100%!important;width:auto!important;height:auto!important;object-fit:contain}
+  .workspace-foot{flex:0 0 auto;padding-top:8px!important}
+}
+@media (max-width:760px){
+  .stage.has-image .preview-wrap{overflow:auto!important}
+  .stage.has-image .preview-wrap canvas{max-height:58vh!important}
+}
