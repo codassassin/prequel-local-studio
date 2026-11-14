@@ -37,6 +37,10 @@ npm run build
 npm run preview
 ```
 
+## 4. Browsing the Look Library
+
+The Looks tab presents presets as editorial print cards. Each card shows a visual thumbnail, look name, short description and category. The currently applied look is marked **SELECTED** and receives a brass-accented border. Before a photo is loaded, cards remain visible as a catalogue but cannot be applied; import a photograph to preview and use a look.
+
 ## 4. Import and edit a photograph
 
 1. Open Stillroom and add a photograph using the import control.
