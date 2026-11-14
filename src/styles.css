@@ -765,3 +765,32 @@ select,input,textarea{border-radius:var(--sr-radius-sm)}
 .look-traits i{font:7px ui-monospace,monospace;font-style:normal;letter-spacing:.7px;color:#aaa08d;border:1px solid #ffffff13;padding:3px 4px}
 .preset-card.chosen .look-traits i{border-color:#c5ad7d33;color:#d7c49c}
 @media(max-width:760px){.archive-intro p{font-size:11px}.look-traits i{font-size:6px}}
+
+
+/* Look Archive layout correction — scroll the collection, never crop cards */
+.sidebar{min-height:0}
+.sidebar .preset-panel{
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding:14px 2px 28px;
+  scrollbar-width:thin;
+  scrollbar-color:#62553e transparent;
+  overscroll-behavior:contain;
+}
+.sidebar .preset-panel::-webkit-scrollbar{width:6px}
+.sidebar .preset-panel::-webkit-scrollbar-thumb{background:#62553e;border-radius:8px}
+.sidebar .preset-grid{align-items:stretch;grid-auto-rows:max-content;overflow:visible;padding-bottom:18px}
+.sidebar .preset-card{height:auto;min-height:0;align-self:start;display:flex;flex-direction:column}
+.sidebar .preset-swatch{height:clamp(88px,8vw,116px);min-height:88px;flex:0 0 auto}
+.sidebar .preset-name{display:block;line-height:1.3;margin-top:9px!important;margin-bottom:4px!important}
+.sidebar .preset-card small{display:block;min-height:0;line-height:1.4}
+.sidebar .look-category{margin-top:7px!important}
+.sidebar .look-traits{margin-top:6px;margin-bottom:3px}
+.sidebar .look-traits i{padding:3px 4px}
+.sidebar .look-selected-mark{bottom:7px;right:7px}
+@media(max-width:760px){
+ .sidebar .preset-panel{max-height:65vh}
+ .sidebar .preset-swatch{height:clamp(100px,30vw,150px)}
+}
