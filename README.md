@@ -74,9 +74,14 @@ The production output is written to `dist/`.
 
 The initial AI background-removal model is `briaai/RMBG-1.4`. Its model card states non-commercial licensing; commercial use requires a separate BRIA license. Review the current model card and license before distributing the model or using it commercially. The model loader supports local model files under `/models` with a remote cached fallback.
 
+## Design direction
+
+Stillroom uses the **Editorial Darkroom** visual direction: warm ink and walnut surfaces, parchment typography, restrained brass accents, serif editorial headings, and quiet technical labels. The interface is designed to keep photographs central while making creative tools feel tactile and considered. See [Design System](docs/DESIGN_SYSTEM.md).
+
 ## Documentation
 
 - [User Manual](docs/USER_MANUAL.md) — setup, editing, Exploration, Colour DNA, Palette Transfer, privacy and troubleshooting.
+- [Design System](docs/DESIGN_SYSTEM.md) — design tokens, typography, component principles and responsive behaviour.
 
 ## Current development status
 
