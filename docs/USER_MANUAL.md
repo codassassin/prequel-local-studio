@@ -96,8 +96,11 @@ Palette Transfer applies a saved Colour DNA palette to a different photograph.
 3. Under **Colour palette from**, select a different node that already has an extracted palette.
 4. Review the donor palette swatches.
 5. Adjust **Colour influence**. Lower values retain more of the target's original colours; higher values apply more of the donor palette.
-6. Optionally enable **Gentle skin-tone protection**.
-7. Choose **Create palette experiment**.
+6. Choose **Preview palette** to render a local preview. Preview processing uses the same bounded working-image size as a committed palette experiment.
+7. Choose **Compare original** to toggle the preview area between the untouched target and the palette result.
+8. Change the donor or influence and generate another preview as needed.
+9. Optionally enable **Gentle skin-tone protection**.
+10. Choose **Create palette experiment** only when you are happy with the direction.
 8. A new experiment node is added and connected to both the target and palette donor. The original nodes are not overwritten.
 
 ### What the algorithm does
