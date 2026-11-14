@@ -906,3 +906,13 @@ select,input,textarea{border-radius:var(--sr-radius-sm)}
 .sidebar .mask-layer .mask-state-toggle,.sidebar .mask-layer .mask-delete{display:inline-flex!important;align-items:center;justify-content:center;visibility:visible;opacity:1}
 .sidebar .mask-layer .mask-dot{display:block;flex:0 0 8px;width:8px;height:8px}
 .sidebar .mask-layer .mask-select-name{display:block;min-width:0;visibility:visible;opacity:1}
+
+.mask-shape-controls{display:flex;flex-direction:column;gap:10px;padding:10px 0}
+.mask-shape-controls label{display:grid;grid-template-columns:minmax(84px,104px) minmax(0,1fr) 38px;align-items:center;gap:10px}
+.mask-shape-controls input[type=range]{width:100%;min-width:0}
+.mask-shape-controls button{align-self:flex-start}
+.stage.has-image{min-height:0}
+.stage.has-image .photo-stage-heading{min-height:48px;padding-top:8px;padding-bottom:8px}
+.stage.has-image .preview-wrap{min-height:0;padding:12px 22px;overflow:hidden}
+.stage.has-image .preview-wrap canvas{max-height:calc(100vh - 205px);max-width:100%}
+@media(max-width:760px){.stage.has-image .preview-wrap{min-height:0;padding:10px}.stage.has-image .preview-wrap canvas{max-height:calc(100vh - 270px)}}
