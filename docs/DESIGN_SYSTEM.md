@@ -109,3 +109,8 @@ The Looks tab is presented as a curated recipe archive. An introductory editoria
 ## Stage 6 — Personal Look Workshop
 
 Saved looks are managed in an in-app editorial dialog rather than a browser prompt. The dialog supports naming, description and collection assignment. Saved cards expose Edit details, Duplicate and Delete actions. Deletion uses an inline confirmation state rather than a blocking browser confirmation. Saved recipes continue to use the existing `stillroom-looks` localStorage key and the existing recipe `values` object; no new storage service or cloud sync is introduced. The workshop edits metadata for existing looks; creating a look captures the current adjustment values.
+
+
+## Import format policy — broad file selection
+
+The file picker now offers common browser image types plus TIFF, HEIC/HEIF, BMP, GIF, SVG and common camera RAW extensions (CR2, CR3, NEF, ARW, DNG, RAF, ORF, RW2, PEF and SRW). This is a selection improvement only: the current decoder still relies on browser `createImageBitmap` / `Image` support and a canvas working copy. Adding an extension to the picker does not guarantee that the browser can decode it. Unsupported formats receive an explicit decoder error rather than being silently discarded. Dedicated local decoders for HEIC/HEIF, TIFF and RAW remain future work.
