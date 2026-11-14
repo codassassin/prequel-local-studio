@@ -104,3 +104,8 @@ The loaded-photo preview is a bounded, non-scrollable stage. At 100% zoom, the c
 ## Stage 5 — Look Archive
 
 The Looks tab is presented as a curated recipe archive. An introductory editorial block explains the collection, and category chips show the number of available looks in each group. Cards display three compact recipe descriptors derived from their existing values: temperature (warm/cool/neutral), contrast (punchy/soft/balanced), and texture character (textured/diffused/clean). These are heuristic labels for browsing, not measured image analysis or AI classifications. The original preset and saved-look data structures, search/filter behaviour, localStorage persistence and `apply()` function are retained.
+
+
+## Stage 6 — Personal Look Workshop
+
+Saved looks are managed in an in-app editorial dialog rather than a browser prompt. The dialog supports naming, description and collection assignment. Saved cards expose Edit details, Duplicate and Delete actions. Deletion uses an inline confirmation state rather than a blocking browser confirmation. Saved recipes continue to use the existing `stillroom-looks` localStorage key and the existing recipe `values` object; no new storage service or cloud sync is introduced. The workshop edits metadata for existing looks; creating a look captures the current adjustment values.
