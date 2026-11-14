@@ -76,7 +76,7 @@ The initial AI background-removal model is `briaai/RMBG-1.4`. Its model card sta
 
 ## Design direction
 
-Stillroom uses the **Editorial Darkroom** visual direction: warm ink and walnut surfaces, parchment typography, restrained brass accents, serif editorial headings, and quiet technical labels. The no-photo state opens with a designed welcome composition and a clear local import action. The Look Library presents presets as editorial print cards with clearer preview, category and selection hierarchy. The loaded-photo stage uses a warm framed presentation, compact frame metadata and floating zoom controls. At 100% zoom, the full photograph fits the available canvas without internal scrolling. The interface is designed to keep photographs central while making creative tools feel tactile and considered. See [Design System](docs/DESIGN_SYSTEM.md).
+Stillroom uses the **Editorial Darkroom** visual direction: warm ink and walnut surfaces, parchment typography, restrained brass accents, serif editorial headings, and quiet technical labels. The no-photo state opens with a designed welcome composition and a clear local import action. The Look Library presents presets as editorial print cards with clearer preview, category and selection hierarchy, collection counts and concise recipe descriptors. The loaded-photo stage uses a warm framed presentation, compact frame metadata and floating zoom controls. At 100% zoom, the full photograph fits the available canvas without internal scrolling. The interface is designed to keep photographs central while making creative tools feel tactile and considered. See [Design System](docs/DESIGN_SYSTEM.md).
 
 ## Documentation
 
