@@ -74,7 +74,7 @@ Stage 2 adds a component-level redesign to the empty Main Darkroom stage in `src
 
 Stage 3 redesigns the Look Library card structure and styling. Each look is presented as an editorial print card with a larger thumbnail, serif title, descriptive copy, category label and explicit selected marker. The existing preset catalogue and `apply()` behaviour are retained. Cards remain disabled until a photo is loaded; disabled cards remain visually legible rather than being washed out.
 
-The photo-loaded canvas and filmstrip have not yet been structurally redesigned. The welcome artwork is decorative and does not represent an actual user photo.
+Stage 4 refines the photo-loaded Darkroom stage: a more pronounced warm frame, stronger image-stage header hierarchy, deeper presentation backdrop, larger image canvas allowance, clearer floating zoom controls and a more deliberate transform/crop toolbar. The existing canvas, zoom, compare, import and transform handlers are retained; this stage is visual styling only. The welcome artwork is decorative and does not represent an actual user photo.
 
 ## Next design stages
 
