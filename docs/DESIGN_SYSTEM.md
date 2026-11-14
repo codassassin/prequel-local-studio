@@ -72,12 +72,14 @@ The foundation pass establishes global CSS tokens and shared visual language in 
 
 Stage 2 adds a component-level redesign to the empty Main Darkroom stage in `src/App.jsx`: a two-column editorial welcome composition, a clear local photo-import action, format/privacy microcopy and a restrained photographic-print illustration. The existing hidden file input and `load()` workflow remain the source of import behaviour. The new composition adapts to narrower screens.
 
-The photo-loaded canvas, Look Library card system and filmstrip have not yet been structurally redesigned. The welcome artwork is decorative and does not represent an actual user photo.
+Stage 3 redesigns the Look Library card structure and styling. Each look is presented as an editorial print card with a larger thumbnail, serif title, descriptive copy, category label and explicit selected marker. The existing preset catalogue and `apply()` behaviour are retained. Cards remain disabled until a photo is loaded; disabled cards remain visually legible rather than being washed out.
+
+The photo-loaded canvas and filmstrip have not yet been structurally redesigned. The welcome artwork is decorative and does not represent an actual user photo.
 
 ## Next design stages
 
-1. Main Darkroom composition and empty-state art direction.
-2. Look library card previews and stronger selection feedback.
+1. Main Darkroom photo-loaded composition and image presentation.
+2. Look Library card previews and stronger selection feedback (Stage 3 implemented).
 3. Exploration canvas cards, grouping and toolbar hierarchy.
 4. Shared control refinement (sliders, inputs, modals and contextual actions).
 5. Responsive and accessibility review.
