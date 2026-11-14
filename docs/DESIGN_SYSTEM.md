@@ -114,3 +114,8 @@ Saved looks are managed in an in-app editorial dialog rather than a browser prom
 ## Import format policy — broad file selection
 
 The file picker now offers common browser image types plus TIFF, HEIC/HEIF, BMP, GIF, SVG and common camera RAW extensions (CR2, CR3, NEF, ARW, DNG, RAF, ORF, RW2, PEF and SRW). This is a selection improvement only: the current decoder still relies on browser `createImageBitmap` / `Image` support and a canvas working copy. Adding an extension to the picker does not guarantee that the browser can decode it. Unsupported formats receive an explicit decoder error rather than being silently discarded. Dedicated local decoders for HEIC/HEIF, TIFF and RAW remain future work.
+
+
+## Local image decoder stage
+
+`src/imageDecoder.js` normalizes HEIC/HEIF and TIFF inputs into PNG working files using `heic2any` and `utif` before the existing browser canvas pipeline. This is local browser-side conversion; original file bytes are not overwritten or uploaded. RAW and layered PSD/PSB inputs are explicitly rejected until dedicated decoders are integrated and validated. TIFF multi-page selection, metadata/ICC preservation and memory characteristics remain limitations to test. The file picker accepting an extension is not itself proof of decoder support.
