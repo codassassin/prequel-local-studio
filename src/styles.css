@@ -950,4 +950,4 @@ select,input,textarea{border-radius:var(--sr-radius-sm)}
 
 
 /* Live brush preview is isolated from the expensive photo render. */
-.photo-canvas-shell>.brush-live-preview{position:absolute;inset:0;width:100%;height:100%;max-width:none;max-height:none;pointer-events:none;z-index:2}
+.stage.has-image .preview-wrap .photo-canvas-shell>.brush-live-preview{position:absolute!important;inset:0!important;display:block!important;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;min-width:0!important;min-height:0!important;padding:0!important;margin:0!important;border:0!important;box-shadow:none!important;object-fit:fill!important;pointer-events:none!important;z-index:2!important}
