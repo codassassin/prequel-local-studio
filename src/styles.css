@@ -937,3 +937,17 @@ select,input,textarea{border-radius:var(--sr-radius-sm)}
 }
 
 .preview-wrap canvas.canvas-pan-ready{cursor:grab;touch-action:none;user-select:none}.preview-wrap canvas.canvas-pan-ready:active{cursor:grabbing}.preview-wrap canvas{will-change:transform}
+
+/* Interactive on-image gradient mask controls */
+.photo-canvas-shell{position:relative;display:inline-flex;flex:0 0 auto;max-width:100%;max-height:100%;will-change:transform}
+.photo-canvas-shell>canvas:first-child{display:block;max-width:100%;max-height:100%;width:auto;height:auto}
+.gradient-handle-overlay{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;touch-action:none;z-index:3}
+.gradient-guide{stroke:#f3e6c5;stroke-width:2;stroke-dasharray:7 6;opacity:.8;vector-effect:non-scaling-stroke}
+.gradient-boundary{fill:#d8b77a12;stroke:#f3e6c5;stroke-width:1.5;stroke-dasharray:6 5;vector-effect:non-scaling-stroke}
+.gradient-center-handle,.gradient-end-handle{pointer-events:all;cursor:grab;stroke:#171612;stroke-width:2;vector-effect:non-scaling-stroke}
+.gradient-center-handle{fill:#f0d29b}.gradient-end-handle{fill:#8bc0b1}
+.gradient-center-handle:active,.gradient-end-handle:active{cursor:grabbing}
+
+
+/* Live brush preview is isolated from the expensive photo render. */
+.stage.has-image .preview-wrap .photo-canvas-shell>.brush-live-preview{position:absolute!important;inset:0!important;display:block!important;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;min-width:0!important;min-height:0!important;padding:0!important;margin:0!important;border:0!important;box-shadow:none!important;object-fit:fill!important;pointer-events:none!important;z-index:2!important}
