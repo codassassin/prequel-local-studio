@@ -947,3 +947,7 @@ select,input,textarea{border-radius:var(--sr-radius-sm)}
 .gradient-center-handle,.gradient-end-handle{pointer-events:all;cursor:grab;stroke:#171612;stroke-width:2;vector-effect:non-scaling-stroke}
 .gradient-center-handle{fill:#f0d29b}.gradient-end-handle{fill:#8bc0b1}
 .gradient-center-handle:active,.gradient-end-handle:active{cursor:grabbing}
+
+
+/* Live brush preview is isolated from the expensive photo render. */
+.photo-canvas-shell>.brush-live-preview{position:absolute;inset:0;width:100%;height:100%;max-width:none;max-height:none;pointer-events:none;z-index:2}
